@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    image: kerckhoff
+    command: python3 manage.py runserver 0.0.0.0:5000
+    ports:
+      - "5000:5000"
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/kerckhoff
+  svc:
+    image: kerckhoff
+    command: npm run watch
+    volumes:
+      - .:/kerckhoff
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"

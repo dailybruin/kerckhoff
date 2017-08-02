@@ -13,6 +13,7 @@ services:
       - redis
     volumes:
       - .:/kerckhoff
+      - /kerckhoff/node_modules
   svc:
     image: kerckhoff
     command: npm run watch

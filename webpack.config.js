@@ -1,33 +1,60 @@
-var path = require("path")
-var webpack = require('webpack')
-var BundleTracker = require('webpack-bundle-tracker')
+var path = require("path");
+var webpack = require("webpack");
+var BundleTracker = require("webpack-bundle-tracker");
 
 module.exports = {
   context: __dirname,
 
-  entry: './assets/js/index', // entry point of our app. assets/js/index.js should require other js modules and dependencies it needs
+  entry: "./assets/js/index", // entry point of our app. assets/js/index.js should require other js modules and dependencies it needs
 
   output: {
-      path: path.resolve('./assets/bundles/'),
-      filename: "[name]-[hash].js",
+    path: path.resolve("./assets/bundles/"),
+    filename: "[name]-[hash].js"
   },
 
-  plugins: [
-        new BundleTracker({filename: './webpack-stats.json'}),
-  ],
+  resolve: {
+    extensions: [".js", ".vue"],
+    alias: {
+      vue: "vue/dist/vue.js"
+    }
+  },
+
+  plugins: [new BundleTracker({ filename: "./webpack-stats.json" })],
 
   module: {
-      rules: [
+    rules: [
+      {
+        test: /\.vue$/,
+        use: [
           {
-            test: /\.js$/,
-            exclude: /(node_modules|bower_components)/,
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['env']
-                }
-            }
+            loader: "vue-loader"
           }
-      ],
-  },
-}
+        ]
+      },
+      {
+        test: /\.js$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: "babel-loader",
+          options: {
+            presets: ["env"]
+          }
+        }
+      },
+      {
+        test: /\.(scss|css)$/,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          }
+        ]
+      }
+    ]
+  }
+};

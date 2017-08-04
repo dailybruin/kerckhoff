@@ -1,12 +1,7 @@
+{% extends "base.html" %}
 {% load render_bundle from webpack_loader %}
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Kerckhoff</title>
-  </head>
-  <body>
+
+{% block content %}
     <div id="app"></div>
     {% render_bundle 'main' %}
-  </body>
-</html>
+{% endblock %}

@@ -2,7 +2,8 @@ import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 import Icon from "vue-awesome/components/Icon";
 import "vue-awesome/icons";
-import App from "./App";
+import MainModule from "./MainModule";
+import router from "./routes/MainRoutes";
 
 // Styles
 import "bootstrap/dist/css/bootstrap.css";
@@ -13,7 +14,8 @@ Vue.component("icon", Icon);
 
 /* eslint-disable no-new */
 const app = new Vue({
+  router,
   el: "#app",
-  template: "<App/>",
-  components: { App }
+  template: "<MainModule />",
+  components: { MainModule }
 });

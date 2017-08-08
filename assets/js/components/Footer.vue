@@ -8,7 +8,7 @@
       </div>
       <div class="row justify-content-md-center mb-2">
         <div class="col col-md-auto">
-          <span class="text-muted">Handcrafted in 118 Kerchkoff Hall</span>
+          <span class="text-muted">Handcrafted with love in 118 Kerchkoff Hall</span>
         </div>
       </div>
       <div class="row justify-content-md-center text-center">

@@ -3,7 +3,7 @@
     <div class="container">
       <b-nav-toggle target="nav_collapse"></b-nav-toggle>
 
-      <b-link class="navbar-brand" to="#">
+      <b-link class="navbar-brand" href="/">
         <div class="d-flex align-items-center branding">
           <img class="logo pr-1 mr-2" src="/static/img/db_logo.svg" />
           <span class="title font-weight-bold">

@@ -17,8 +17,10 @@ services:
   svc:
     image: kerckhoff
     command: npm run watch
+    restart: always
     volumes:
       - .:/kerckhoff
+      - /kerckhoff/node_modules
   db:
     image: postgres:latest
     ports:

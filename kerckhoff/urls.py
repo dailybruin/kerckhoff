@@ -21,6 +21,7 @@ from user_profile import views as profile_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^user/(?P<name>\w+)/$', profile_views.profile),
+    url(r'^manage/', profile_views.profile),
     url(r'^accounts/', include('user_profile.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'', include('pages.urls')),

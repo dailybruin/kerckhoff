@@ -47,6 +47,7 @@
     "bootstrap": "^4.0.0-alpha.6",
     "bootstrap-vue": "^0.18.0",
     "vue": "^2.4.2",
-    "vue-awesome": "^2.3.1"
+    "vue-awesome": "^2.3.1",
+    "vue-router": "^2.7.0"
   }
 }

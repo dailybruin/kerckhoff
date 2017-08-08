@@ -1,9 +1,14 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+from .utils import user_to_json
+
+
+@login_required
 def profile(request):
-    return HttpResponse("Hello to profile!")
+    user_info = user_to_json(request.user)
+    context = {
+        "user_info": user_info
+    }
+    return render(request, 'mgmt.html', context)

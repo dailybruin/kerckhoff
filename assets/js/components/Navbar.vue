@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable type="light" variant="light">
     <div class="container">
-      <b-nav-toggle target="nav_collapse"></b-nav-toggle>
+      <!-- <b-nav-toggle target="nav_collapse"></b-nav-toggle> -->
 
       <b-link class="navbar-brand" href="/">
         <div class="d-flex align-items-center branding">

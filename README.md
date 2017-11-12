@@ -14,10 +14,18 @@ We are using [Docker](https://docs.docker.com/) and [Docker-Compose](https://doc
 0. Install Docker from the official website. Follow the instructions for your specific platform.
 
 1. `git clone https://github.com/daily-bruin/kerckhoff.git` - to clone the repository.
+      NOTE(Windows users): Run the following 2 commands before git cloning the repo	   		`git config --global core.eol lf
+	 git config --global core.autocrlf input`
 
-2. `docker-compose up` - this builds/pulls and configures the Docker images for the Django server, the Postgres database and Redis automatically based on the configuration in `docker-compose.yml`. 
+2. create a .env file with the following contents:
+   `DATABASE_URL=postgres://postgres@db:5432/postgres
+    DEBUG=on
+    SECRET_KEY=kerchkoff-secrets`.
 
-3. The site should now be running on `localhost:5000`, and  the server will automatically restart after any edits you make to Python and JS source files. Refresh the page to see them! (To come: livereload)
+
+3. `docker-compose up` - this builds/pulls and configures the Docker images for the Django server, the Postgres database and Redis automatically based on the configuration in `docker-compose.yml`. 
+
+4. The site should now be running on `localhost:5000`, and  the server will automatically restart after any edits you make to Python and JS source files. Refresh the page to see them! (To come: livereload)
 
 ## How do I contribute?
 1. Set up the Dev environment properly.

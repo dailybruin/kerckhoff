@@ -13,7 +13,7 @@ WORKDIR /kerckhoff
 ADD requirements.txt /kerckhoff/
 RUN pip install -r requirements.txt
 
-ADD package.json /kerckhoff/
+ADD package.json package-lock.json/kerckhoff/
 RUN npm install
 
 ADD . /kerckhoff/

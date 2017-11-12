@@ -41,3 +41,10 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.footer {
+  margin-top: 5em;
+}
+
+</style>
+

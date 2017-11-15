@@ -1,6 +1,28 @@
 <template>
   <div>
-    <h2 class="mb-3">New Site</h2>
+    <h2 class="mb-3">New Site - TESTING KAI's EDITS</h2>
+
+
+
+    <input type="file" id="file-input">
+    <p id="status">Please select a file</p>
+    <img style="border:1px solid gray;width:300px;" id="preview" src="/static/media/default.png">
+
+    <h2>Your information</h2>
+
+    <form method="POST" action="/submit-form/">
+      <input type="hidden" id="avatar-url" name="avatar-url" value="/static/media/default.png">
+      <input type="text" name="username" placeholder="Username"><br>
+      <input type="text" name="full-name" placeholder="Full name"><br><br>
+
+      <hr>
+      <h2>Save changes</h2>
+
+      <input type="submit" value="Update profile">
+    </form>
+
+
+
     <b-form @submit="onSubmit">
       <h5>Site Type</h5>
       <b-form-radio v-model="form.siteType" :options="siteTypeOptions"></b-form-radio>
@@ -59,7 +81,7 @@
 </style>
 
 
-<script>
+<script type="text/javascript">
 export default {
   name: 'manage-newsite-view',
   created: function() {
@@ -102,7 +124,68 @@ export default {
     selectFiles(e) {
       console.log(e.target.webkitEntries)
       console.log(this.$refs.files.webkitEntries)
+    },
+
+
+
+    uploadFile(file, s3Data, url){
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', s3Data.url);
+      xhr.setRequestHeader('x-amz-acl', 'public-read');
+      const postData = new FormData();
+      for(key in s3Data.fields){
+        postData.append(key, s3Data.fields[key]);
+      }
+      postData.append('file', file);
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4){
+          if(xhr.status === 200 || xhr.status === 204){
+            document.getElementById('preview').src = url;
+            document.getElementById('avatar-url').value = url;
+          }
+          else{
+            alert('Could not upload file.');
+          }
+        }
+      };
+      xhr.send(postData);
+    },
+
+
+
+
+    getSignedRequest(file){
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
+      xhr.onreadystatechange = () => {
+        if(xhr.readyState === 4){
+          if(xhr.status === 200){
+            const response = JSON.parse(xhr.responseText);
+            uploadFile(file, response.data, response.url);
+          }
+          else{
+            alert('Could not get signed URL.');
+          }
+        }
+      };
+      xhr.send();
+    },
+    
+
+    initUpload(){
+      const files = document.getElementById('file-input').files;
+      const file = files[0];
+      if(!file){
+        return alert('No file selected.');
+      }
+      getSignedRequest(file);
     }
-  }
+
+
+
+
+
+
+ } 
 }
 </script>

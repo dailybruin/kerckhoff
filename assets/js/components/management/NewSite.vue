@@ -36,7 +36,7 @@
         <b-form-select id="exampleInput3" :options="foods" required v-model="form.food"></b-form-select>
       </b-form-group>
       <b-form-group class="uploadInput">
-        <file-upload ref="uploadComponent" v-model="form.files" name="files" :multiple="true" :directory="true" drop=".drop-area" @input="newFile">
+        <file-upload ref="uploadComponent" v-model="form.files" name="files" :multiple="true" :directory="true" drop=".drop-area" @input-file="newFile">
           <div @dragenter="dragHover = true" @dragover="dragHover = true" @dragleave="dragHover = false" :class=" { 'drag-on': dragHover } " class="drop-area">
             Drag and drop files here
           </div>
@@ -110,9 +110,15 @@ export default {
     }
   },
   methods: {
-    newFile(v) {
-      console.log(v)
-      console.log(this.form.files)
+    newFile(newFile, oldFile) {
+      if (newFile && !oldFile) {
+        // got a new file
+        console.log(newFile.name);
+        console.log(newFile.type);
+
+        // now we need to grab
+      }
+      console.log("sdfsdfd")
     },
     onSubmit(e) {
       e.preventDefault();
@@ -170,7 +176,7 @@ export default {
       };
       xhr.send();
     },
-    
+
 
     initUpload(){
       const files = document.getElementById('file-input').files;
@@ -186,6 +192,6 @@ export default {
 
 
 
- } 
+ }
 }
 </script>

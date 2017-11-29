@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^manage/', profile_views.profile),
     url(r'^accounts/', include('user_profile.urls')),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^api/', include('api.urls')),
     url(r'', include('pages.urls')),
 ]

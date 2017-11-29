@@ -32,7 +32,6 @@ DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -172,3 +171,5 @@ WEBPACK_LOADER = {
 }
 
 LOGIN_REDIRECT_URL = '/manage/'
+
+S3_SITE_UPLOAD_BUCKET = env('S3_SITE_UPLOAD_BUCKET')

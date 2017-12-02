@@ -46,6 +46,15 @@
           Stop Upload
         </button>
       </div>
+      
+      <br/>
+      <div class="progresss-bar">
+        <h5>Progress:<br/></h5>
+        <b-progress :value="progress" variant="info" :max="max" show-progress animated></b-progress>
+      </div>
+
+
+
     </div>
 
   </div>
@@ -91,10 +100,30 @@ export default {
     FileUpload,
   },
 
+
+  methods: {
+    uploadFile() {
+      let formData = new FormData();
+      formData.append('file', this.file);
+      this.$http.post('/api/documents/upload', new FormData(form), {
+        progress(e) {
+          if (e.lengthComputable) {
+            console.log(e.loaded / e.total * 100);
+          }
+        }
+      });
+    }
+  },
+
+
+
   data() {
     return {
       files: [],
+      max: 100,
+      progress: 33
     }
   }
+  
 }
 </script>

@@ -1,197 +1,100 @@
 <template>
-  <div>
-    <h2 class="mb-3">New Site - TESTING KAI's EDITS</h2>
-
-
-
-    <input type="file" id="file-input">
-    <p id="status">Please select a file</p>
-    <img style="border:1px solid gray;width:300px;" id="preview" src="/static/media/default.png">
-
-    <h2>Your information</h2>
-
-    <form method="POST" action="/submit-form/">
-      <input type="hidden" id="avatar-url" name="avatar-url" value="/static/media/default.png">
-      <input type="text" name="username" placeholder="Username"><br>
-      <input type="text" name="full-name" placeholder="Full name"><br><br>
-
-      <hr>
-      <h2>Save changes</h2>
-
-      <input type="submit" value="Update profile">
-    </form>
-
-
-
-    <b-form @submit="onSubmit">
-      <h5>Site Type</h5>
-      <b-form-radio v-model="form.siteType" :options="siteTypeOptions"></b-form-radio>
-      <b-form-group v-if="form.siteType != 'Series'">
-        <b-form-input type="text" v-model="form.slug" required placeholder="Enter site slug" description="This will be the URL path for the site" :formatter="formatSlug" lazy-formatter></b-form-input>
-        <p>
-          <small>{{ 'features.dailybruin.com/' + form.slug }}</small>
-        </p>
-      </b-form-group>
-      <b-form-group v-else id="exampleInputGroup3" label="Food:" label-for="exampleInput3">
-        <b-form-select id="exampleInput3" :options="foods" required v-model="form.food"></b-form-select>
-      </b-form-group>
-      <b-form-group class="uploadInput">
-        <file-upload ref="uploadComponent" v-model="form.files" name="files" :multiple="true" :directory="true" drop=".drop-area" @input-file="newFile">
-          <div @dragenter="dragHover = true" @dragover="dragHover = true" @dragleave="dragHover = false" :class=" { 'drag-on': dragHover } " class="drop-area">
-            Drag and drop files here
+  <div class="example-drag">
+    <div class="upload">
+      <ul v-if="files.length">
+        <li v-for="(file, index) in files" :key="file.id">
+          <span>{{file.name}}</span> -
+          <span>{{file.size | formatSize}}</span> -
+          <span v-if="file.error">{{file.error}}</span>
+          <span v-else-if="file.success">success</span>
+          <span v-else-if="file.active">active</span>
+          <span v-else-if="file.active">active</span>
+          <span v-else></span>
+        </li>
+      </ul>
+      <ul v-else>
+        <td colspan="7">
+          <div class="text-center p-5">
+            <h4>Drop files anywhere to upload<br/>or</h4>
+            <label for="file" class="btn btn-lg btn-primary">Select Files</label>
           </div>
+        </td>
+      </ul>
+
+      <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
+    		<h3>Drop files to upload</h3>
+      </div>
+
+      <div class="example-btn">
+        <file-upload
+          class="btn btn-primary"
+          post-action="/upload/post"
+          :multiple="true"
+          :drop="true"
+          :drop-directory="true"
+          v-model="files"
+          ref="upload">
+          <i class="fa fa-plus"></i>
+          Select files
         </file-upload>
-        <div v-show="form.files" class="uploadedFiles">
-          <ul class="list-group w-100">
-            <div v-for="file in form.files" :key="file.id" class="list-group-item">
-              <div class="d-flex w-100 justify-content-between">
-                <span>{{ file.name }}</span>
-                <span>{{ file.progress }}</span>
-              </div>
-            </div>
-          </ul>
-        </div>
-      </b-form-group>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="secondary">Reset</b-button>
-    </b-form>
+        <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>
+          Start Upload
+        </button>
+        <button type="button" class="btn btn-danger"  v-else @click.prevent="$refs.upload.active = false">
+          <i class="fa fa-stop" aria-hidden="true"></i>
+          Stop Upload
+        </button>
+      </div>
+    </div>
+
   </div>
 </template>
-
-<style lang="scss" scoped>
-.uploadInput {
-  label {
-    width: 100%;
-  }
+<style>
+.example-drag label.btn {
+  margin-bottom: 0;
+  margin-right: 1rem;
 }
 
-.uploadedFiles {
-  max-height: 15em;
-  overflow-y: scroll;
+
+.example-drag .drop-active {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  position: fixed;
+  z-index: 9999;
+  opacity: .6;
+  text-align: center;
+  background: #000;
 }
 
-.drop-area {
-  padding-top: 3em;
-  padding-bottom: 3em;
-  border: 2px dashed #ccc;
-  &.drag-on {
-    background-color: #eee;
-  }
+.example-drag .drop-active h3 {
+  margin: -.5em 0 0;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  font-size: 40px;
+  color: #fff;
+  padding: 0;
 }
 </style>
 
-
-<script type="text/javascript">
+<script>
+import FileUpload from 'vue-upload-component'
 export default {
-  name: 'manage-newsite-view',
-  created: function() {
-
+  components: {
+    FileUpload,
   },
-  data: () => {
+
+  data() {
     return {
-      form: {
-        siteType: 'OneOff',
-        email: '',
-        slug: '',
-        food: null,
-        checked: false,
-        files: []
-      },
-      dragHover: false,
-      siteTypeOptions: [
-        { text: 'One Off', value: 'OneOff' },
-        { text: 'Series', value: 'Series' },
-      ],
-      foods: [
-        { text: 'Select One', value: null },
-        'Carrots', 'Beans', 'Tomatoes', 'Corn'
-      ],
-      filesTableFields: ["name", "size", "progress"]
+      files: [],
     }
-  },
-  methods: {
-    newFile(newFile, oldFile) {
-      if (newFile && !oldFile) {
-        // got a new file
-        console.log(newFile.name);
-        console.log(newFile.type);
-
-        // now we need to grab
-      }
-      console.log("sdfsdfd")
-    },
-    onSubmit(e) {
-      e.preventDefault();
-      console.log(this.$refs.files)
-    },
-    formatSlug(value, e) {
-      return value.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^0-9a-zA-Z-]/g, '')
-    },
-    selectFiles(e) {
-      console.log(e.target.webkitEntries)
-      console.log(this.$refs.files.webkitEntries)
-    },
-
-
-
-    uploadFile(file, s3Data, url){
-      const xhr = new XMLHttpRequest();
-      xhr.open('POST', s3Data.url);
-      xhr.setRequestHeader('x-amz-acl', 'public-read');
-      const postData = new FormData();
-      for(key in s3Data.fields){
-        postData.append(key, s3Data.fields[key]);
-      }
-      postData.append('file', file);
-      xhr.onreadystatechange = () => {
-        if(xhr.readyState === 4){
-          if(xhr.status === 200 || xhr.status === 204){
-            document.getElementById('preview').src = url;
-            document.getElementById('avatar-url').value = url;
-          }
-          else{
-            alert('Could not upload file.');
-          }
-        }
-      };
-      xhr.send(postData);
-    },
-
-
-
-
-    getSignedRequest(file){
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
-      xhr.onreadystatechange = () => {
-        if(xhr.readyState === 4){
-          if(xhr.status === 200){
-            const response = JSON.parse(xhr.responseText);
-            uploadFile(file, response.data, response.url);
-          }
-          else{
-            alert('Could not get signed URL.');
-          }
-        }
-      };
-      xhr.send();
-    },
-
-
-    initUpload(){
-      const files = document.getElementById('file-input').files;
-      const file = files[0];
-      if(!file){
-        return alert('No file selected.');
-      }
-      getSignedRequest(file);
-    }
-
-
-
-
-
-
- }
+  }
 }
 </script>

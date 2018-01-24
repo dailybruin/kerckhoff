@@ -4,7 +4,8 @@
       <ul v-if="files.length">
         <li v-for="(file, index) in files" :key="file.id">
           <span>{{file.name}}</span> -
-          <span>{{file.size | formatSize}}</span> -
+          <span>{{file.size}}</span> -
+          <span>{{file.s3_state}}</span>
           <span v-if="file.error">{{file.error}}</span>
           <span v-else-if="file.success">success</span>
           <span v-else-if="file.active">active</span>
@@ -33,27 +34,24 @@
           :drop="true"
           :drop-directory="true"
           v-model="files"
+          @input-file="inputFile"
           ref="upload">
           <i class="fa fa-plus"></i>
           Select files
         </file-upload>
-        <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+        <button type="button" class="btn btn-success"
+          v-if="readyForUpload && (!$refs.upload || !$refs.upload.active) "
+          @click.prevent="$refs.upload.active == true">
           <i class="fa fa-arrow-up" aria-hidden="true"></i>
           Start Upload
         </button>
-        <button type="button" class="btn btn-danger"  v-else @click.prevent="$refs.upload.active = false">
-          <i class="fa fa-stop" aria-hidden="true"></i>
-          Stop Upload
-        </button>
       </div>
-      
+
       <br/>
       <div class="progresss-bar">
         <h5>Progress:<br/></h5>
         <b-progress :value="progress" variant="info" :max="max" show-progress animated></b-progress>
       </div>
-
-
 
     </div>
 
@@ -100,8 +98,29 @@ export default {
     FileUpload,
   },
 
+  computed: {
+    readyForUpload: function() {
+      return this.files.length !== 0 && this.files.filter(f => f.s3_state === "NOT READY").length === 0
+    }
+  },
 
   methods: {
+    inputFile: function (newFile, oldFile) {
+      if (newFile && !oldFile) {
+        console.log("adding a new file, getting stuff")
+        console.log(newFile.file)
+        this.getSignedRequest(newFile)
+      }
+      if (newFile && oldFile && !newFile.active && oldFile.active) {
+        // Get response data
+        console.log('response', newFile.response)
+        if (newFile.xhr) {
+          //  Get the response status code
+          console.log('status', newFile.xhr.status)
+        }
+      }
+    },
+
     uploadFile(file, s3Data, url) {
       const xhr = new XMLHttpRequest();
       xhr.open('POST', s3Data.url);
@@ -125,14 +144,17 @@ export default {
       xhr.send(postData);
     },
 
-    getSignedRequest(file){
+    getSignedRequest(newFile){
+      const file = newFile.file
       const xhr = new XMLHttpRequest();
-      xhr.open('GET', `/sign-s3?file-name=${file.name}&file-type=${file.type}`);
+      this.$set(newFile, 's3_state', 'NOT READY')
+      xhr.open('GET', `/api/sign-s3?file_name=${file.name}&file_type=${file.type}`);
       xhr.onreadystatechange = () => {
         if(xhr.readyState === 4){
           if(xhr.status === 200){
             const response = JSON.parse(xhr.responseText);
-            uploadFile(file, response.data, response.url);
+            newFile.s3_state = "READY"
+            //uploadFile(file, response.data, response.url);
           }
           else{
             alert('Could not get signed URL.');
@@ -143,6 +165,7 @@ export default {
     },
 
     initUpload(){
+      console.log("Sfdsdfsdfdfsdf")
       const files = document.getElementById('file-input').files;
       const file = files[0];
       if(!file){
@@ -162,6 +185,6 @@ export default {
       progress: 33
     }
   }
-  
+
 }
 </script>

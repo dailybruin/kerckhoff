@@ -1,15 +1,12 @@
 import json
 from datetime import datetime
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urlparse import unquote
-
+import boto3
+from urllib.parse import unquote
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, \
     HttpResponseServerError, JsonResponse
 from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .utils import get_aws_v4_signature, get_aws_v4_signing_key, get_s3direct_destinations
@@ -19,6 +16,31 @@ def get_random(request):
     x = request.GET.get('q', "world")
     return JsonResponse({"hello": x, "s3key": settings.S3_SITE_UPLOAD_BUCKET})
 
+@csrf_protect
+@require_GET
+def sign_s3(request):
+    S3_BUCKET = settings.S3_SITE_UPLOAD_BUCKET
+
+    file_name = request.GET.get('file_name')
+    file_type = request.GET.get('file_type')
+
+    s3 = boto3.client('s3')
+
+    presigned_post = s3.generate_presigned_post(
+    Bucket = S3_BUCKET,
+    Key = file_name,
+    Fields = {"acl": "public-read", "Content-Type": file_type},
+    Conditions = [
+        {"acl": "public-read"},
+        {"Content-Type": file_type}
+    ],
+    ExpiresIn = 3600
+    )
+
+    return JsonResponse({
+        'data': presigned_post,
+        'url': 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
+    })
 
 @csrf_protect
 @require_POST

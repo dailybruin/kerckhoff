@@ -49,6 +49,6 @@
     "vue": "^2.4.2",
     "vue-awesome": "^2.3.1",
     "vue-router": "^2.7.0",
-    "vue-upload-component": "^2.6.3"
+    "vue-upload-component": "^2.7.4"
   }
 }

@@ -29,7 +29,6 @@
       <div class="example-btn">
         <file-upload
           class="btn btn-primary"
-          post-action="/upload/post"
           :multiple="true"
           :drop="true"
           :drop-directory="true"
@@ -109,8 +108,14 @@ export default {
       if (newFile && !oldFile) {
         console.log("adding a new file, getting stuff")
         console.log(newFile.file)
-        this.getSignedRequest(newFile)
+        this.getSignedRequestAndUpload(newFile)
       }
+
+      if (newFile && oldFile) {
+        console.log("update event!!!")
+        console.log(newFile)
+      }
+
       if (newFile && oldFile && !newFile.active && oldFile.active) {
         // Get response data
         console.log('response', newFile.response)
@@ -144,7 +149,7 @@ export default {
       xhr.send(postData);
     },
 
-    getSignedRequest(newFile){
+    getSignedRequestAndUpload(newFile){
       const file = newFile.file
       const xhr = new XMLHttpRequest();
       this.$set(newFile, 's3_state', 'NOT READY')
@@ -153,7 +158,19 @@ export default {
         if(xhr.readyState === 4){
           if(xhr.status === 200){
             const response = JSON.parse(xhr.responseText);
-            newFile.s3_state = "READY"
+            const s3Data = response.data
+            this.$refs.upload.update(newFile,
+              {
+                "s3_state": "READY",
+                "s3_response": response,
+                "postAction": response.url,
+                "data": s3Data.fields,
+                "active": true,
+                //"headers": {
+                //  "x-amz-acl": "public-read"
+                //}
+              }
+            )
             //uploadFile(file, response.data, response.url);
           }
           else{

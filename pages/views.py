@@ -14,15 +14,15 @@ def pages(request):
     pageList = list(Page.objects.all())
 
     #returns error is queryNumber is too big
-    pagesperQuery = 50
-    queryNumber = 1
-    errorData = {"error": "Went Too Far!"}
-    if pagesperQuery*(queryNumber-1) > len(pageList):
+    pagesPerQuery = int(request.GET['pagesPerQuery'])
+    queryNumber = int(request.GET['queryNumber'])
+    errorData = {"error": "we don't have that many pages!"}
+    if pagesPerQuery*(queryNumber-1) > len(pageList):
         return HttpResponse(json.dumps(errorData), content_type='application/json')
 
     #assigns starting and ending indexes for pageList based on queryNumber
-    start = pagesperQuery * (queryNumber - 1)
-    end = start + pagesperQuery - 1
+    start = pagesPerQuery * (queryNumber - 1)
+    end = start + pagesPerQuery - 1
     end = min(end, len(pageList)-1)
 
     #adds each page's data to dict

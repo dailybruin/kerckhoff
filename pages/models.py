@@ -27,7 +27,7 @@ class Page(models.Model):
     contributors = models.ManyToManyField(User)
     is_public = models.BooleanField(db_index=True)
     public_publish_date = models.DateField(db_index=True, auto_now=True)
-    current_release = models.ForeignKey('Release', on_delete=models.PROTECT)
+    #current_release = models.ForeignKey('Release', on_delete=models.PROTECT, null=True)
     title = models.CharField(max_length=128)
     series = models.ForeignKey('Series', on_delete=models.PROTECT, null=True)
 

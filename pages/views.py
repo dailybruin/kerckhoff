@@ -10,4 +10,30 @@ def index(request):
     return render(request, 'index.html')
 
 def pages(request):
-    return HttpResponse(json.dumps(list(Page.objects.all())), content_type='application/json')
+    #gets list of pages
+    pageList = list(Page.objects.all())
+
+    #returns error is queryNumber is too big
+    pagesperQuery = 50
+    queryNumber = 1
+    errorData = {"error": "Went Too Far!"}
+    if pagesperQuery*(queryNumber-1) > len(pageList):
+        return HttpResponse(json.dumps(errorData), content_type='application/json')
+
+    #assigns starting and ending indexes for pageList based on queryNumber
+    start = pagesperQuery * (queryNumber - 1)
+    end = start + pagesperQuery - 1
+    end = min(end, len(pageList)-1)
+
+    #adds each page's data to dict
+    data = {}
+    for i in range(start, end+1):
+        eachPageData = {}
+        eachPageData["Title"] = pageList[i].title
+        eachPageData["Page Type"] = pageList[i].page_type
+        eachPageData["Public"] = pageList[i].is_public
+        data[pageList[i].slug] = eachPageData;
+
+    #converts data to JSON and returns
+    pageJSON = json.dumps(data)
+    return HttpResponse(pageJSON, content_type='application/json')

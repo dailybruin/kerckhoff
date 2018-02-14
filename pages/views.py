@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 import json
 from django.http import HttpResponse
 from pages.models import Page
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import math
 
 # Create your views here.
@@ -11,28 +12,20 @@ def index(request):
     return render(request, 'index.html')
 
 def pages(request):
-    #gets list of pages
-    pageList = list(Page.objects.all())
-
-    #if queryNumber is too big, reduces it to largest possible value
+    #uses params to get pages
     pagesPerQuery = int(request.GET['pagesPerQuery'])
     queryNumber = int(request.GET['queryNumber'])
-    if pagesPerQuery*(queryNumber-1) > len(pageList):
-        queryNumber = math.floor(len(pageList)/pagesPerQuery) + 1
-
-    #assigns starting and ending indexes for pageList based on queryNumber
-    start = pagesPerQuery * (queryNumber - 1)
-    end = start + pagesPerQuery - 1
-    end = min(end, len(pageList)-1)
+    paginator = Paginator(Page.objects.all(), pagesPerQuery, allow_empty_first_page=True)
+    currentQuery = paginator.get_page(queryNumber)
 
     #adds each page's data to dict
     data = {}
-    for i in range(start, end+1):
+    for page in currentQuery:
         eachPageData = {}
-        eachPageData["Title"] = pageList[i].title
-        eachPageData["Page Type"] = pageList[i].page_type
-        eachPageData["Public"] = pageList[i].is_public
-        data[pageList[i].slug] = eachPageData;
+        eachPageData["Title"] = page.title
+        eachPageData["Page Type"] = page.page_type
+        eachPageData["Public"] = page.is_public
+        data[page.slug] = eachPageData;
 
     #converts data to JSON and returns
     pageJSON = json.dumps(data)

@@ -127,12 +127,13 @@ export default {
     },
 
     uploadFile(file, s3Data, url) {
+      console.log("uploadinggg")
       const xhr = new XMLHttpRequest();
       xhr.open('POST', s3Data.url);
       xhr.setRequestHeader('x-amz-acl', 'public-read');
       const postData = new FormData();
-      for(key in s3Data.fields){
-        postData.append(key, s3Data.fields[key]);
+      for(let key in s3Data.data.fields){
+        postData.append(key, s3Data.data.fields[key]);
       }
       postData.append('file', file);
       xhr.onreadystatechange = () => {
@@ -163,7 +164,7 @@ export default {
               {
                 "s3_state": "READY",
                 "s3_response": response,
-                "postAction": response.url,
+                "postAction": s3Data.url,
                 "data": s3Data.fields,
                 "active": true,
                 //"headers": {
@@ -171,7 +172,7 @@ export default {
                 //}
               }
             )
-            //uploadFile(file, response.data, response.url);
+            //this.uploadFile(file, response, response.url);
           }
           else{
             alert('Could not get signed URL.');

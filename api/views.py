@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .utils import get_aws_v4_signature, get_aws_v4_signing_key, get_s3direct_destinations
+from botocore.client import Config
 
 @login_required
 def get_random(request):
@@ -24,7 +25,7 @@ def sign_s3(request):
     file_name = request.GET.get('file_name')
     file_type = request.GET.get('file_type')
 
-    s3 = boto3.client('s3')
+    s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
 
     presigned_post = s3.generate_presigned_post(
     Bucket = S3_BUCKET,
@@ -38,8 +39,7 @@ def sign_s3(request):
     )
 
     return JsonResponse({
-        'data': presigned_post,
-        'url': 'http://%s.s3.amazonaws.com/%s' % (S3_BUCKET, file_name)
+        'data': presigned_post
     })
 
 @csrf_protect

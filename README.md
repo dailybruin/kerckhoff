@@ -36,5 +36,7 @@ We are using [Docker](https://docs.docker.com/) and [Docker-Compose](https://doc
 
 8. Create a pull request (request to merge your branch into the master branch) using the button on Github!
 
+9. Remeber to migrate and createsuperuser
+
 ! Important ! - Don't commit secret keys or any sort of sensitive information into git! Always do a `git status` to double check if you're not sure.
 

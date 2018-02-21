@@ -22,7 +22,17 @@ const routes = [
       },
       {
         path: "new",
-        component: NewSite
+        component: NewSite,
+        children: [
+          {
+            path: "",
+            component: NewSiteForm
+          },
+          {
+            path: "upload",
+            component: NewSiteUploadComponent
+          }
+        ]
       }
     ]
   }

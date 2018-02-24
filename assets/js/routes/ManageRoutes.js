@@ -4,6 +4,7 @@ import UserProfile from "../components/UserProfile";
 import Manage from "../components/Manage";
 import ManageDisplay from "../components/management/ManageDisplay";
 import NewSite from "../components/management/NewSite";
+import Packages from "../components/management/Packages";
 
 Vue.use(Router);
 
@@ -23,6 +24,10 @@ const routes = [
       {
         path: "new",
         component: NewSite
+      },
+      {
+        path: "packages",
+        component: Packages
       }
     ]
   }

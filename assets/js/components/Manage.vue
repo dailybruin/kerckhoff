@@ -1,16 +1,18 @@
 <template>
 <div class="container mt-2">
+
+
   <div class="row mb-2">
     <div class="col col-sm-12">
-      <h2>Site Manager</h2>
+      <h1 class="mt-2">Sites Manager</h1>
     </div>
   </div>
   <div class="row mb-3">
-    <div class="col col-md-4">
-      <b-button variant="primary" to="new">
-        <icon class="align-middle" name="plus"></icon>
-        <span class="align-middle ml-1">New Site</span>
-      </b-button>
+    <div class="col col-md-3">
+      <b-list-group>
+        <b-list-group-item to="packages">Packages</b-list-group-item>
+        <b-list-group-item href="#" disabled>Flatpages</b-list-group-item>
+      </b-list-group>
     </div>
     <div class="col">
       <router-view></router-view>

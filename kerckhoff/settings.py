@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     'pages',
     'user_profile',
+    'packages'
 ]
 
 MIDDLEWARE = [
@@ -112,6 +113,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': [
             'profile',
             'email',
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/drive.file'
         ],
         'AUTH_PARAMS': {
             'access_type': 'online',
@@ -172,4 +175,8 @@ WEBPACK_LOADER = {
 
 LOGIN_REDIRECT_URL = '/manage/'
 
+# Other stuff
+
 S3_SITE_UPLOAD_BUCKET = env('S3_SITE_UPLOAD_BUCKET')
+
+REPOSITORY_FOLDER_LINK = env("REPOSITORY_FOLDER_LINK")

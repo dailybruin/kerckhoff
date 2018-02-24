@@ -1,16 +1,18 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_http_methods
 from pages.models import Page
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import math
+import json
 
 # Create your views here.
 
 def index(request):
     return render(request, 'index.html')
 
+@require_http_methods(["GET"])
 def pages(request):
     #uses params to get pages
     pagesPerQuery = int(request.GET['pagesPerQuery'])
@@ -28,5 +30,9 @@ def pages(request):
         data[page.slug] = eachPageData;
 
     #converts data to JSON and returns
-    pageJSON = json.dumps(data)
-    return HttpResponse(pageJSON, content_type='application/json')
+    return JsonResponse(data)
+
+@require_http_methods(["POST"])
+def create_page(request):
+    return
+    

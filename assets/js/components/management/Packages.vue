@@ -12,7 +12,7 @@
     </b-button-group>
   </div>
 
-  <b-modal id="create-modal" size="lg" title="New Package">
+  <b-modal id="create-modal" size="lg" title="New Package" ref="createModal">
     <b-form ref="packageForm" @submit="submitForm">
       <div class="container" fluid>
           <b-form-group id="slug-label"
@@ -78,7 +78,7 @@
       </div>
     </b-form>
     <div slot="modal-footer" class="w-100">
-      <b-btn variant="primary" v-if="hasError || !submitted" @click="submitForm">
+      <b-btn variant="primary" v-if="!submitted" @click="submitForm">
         Submit
       </b-btn>
       <h4 v-else>
@@ -132,9 +132,23 @@ export default {
       // }
       // this.$refs.packageForm.validated = true
       console.log(this.form)
+      this.submitted = true;
       let res = axios.post("/api/packages", this.form)
         .then((res) => {
           console.log(res)
+          this.form = {
+            slug: "",
+            description: "",
+            drive_folder_url: "",
+            publish_date: ""
+          }
+          this.errs = {
+            slug: null,
+            description: null,
+            drive_folder_url: null,
+            publish_date: null
+          }
+          this.$refs.createModal.hide()
         })
         .catch((err) => {
           console.log(err.response);

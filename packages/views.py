@@ -5,6 +5,7 @@ from django.views.decorators.http import require_http_methods, require_GET
 import json
 from .models import Package
 from .forms import PackageForm
+from django.forms.models import model_to_dict
 
 @require_http_methods(['GET', 'POST'])
 def list_or_create(request):
@@ -20,8 +21,8 @@ def list_or_create(request):
         if form_data.is_valid():
             model_instance = form_data.save(commit=False)
             print(model_instance)
-            model_instance.setup_and_save(request.user)
-            return JsonResponse(model_instance.__dict__)
+            m = model_instance.setup_and_save(request.user)
+            return JsonResponse(model_to_dict(m), status=201)
         else:
             return JsonResponse(form_data.errors, status=400)
         # Do more processing

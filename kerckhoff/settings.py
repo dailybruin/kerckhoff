@@ -117,7 +117,7 @@ SOCIALACCOUNT_PROVIDERS = {
             'https://www.googleapis.com/auth/drive.file'
         ],
         'AUTH_PARAMS': {
-            'access_type': 'online',
+            'access_type': 'offline',
             'hd': 'media.ucla.edu'
         }
     }
@@ -179,4 +179,4 @@ LOGIN_REDIRECT_URL = '/manage/'
 
 S3_SITE_UPLOAD_BUCKET = env('S3_SITE_UPLOAD_BUCKET')
 
-REPOSITORY_FOLDER_LINK = env("REPOSITORY_FOLDER_LINK")
+REPOSITORY_FOLDER_ID = env("REPOSITORY_FOLDER_ID")

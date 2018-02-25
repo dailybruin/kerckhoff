@@ -1,16 +1,26 @@
 <template>
 <div class="container">
-  <div class="col">
-    <b-button-group>
-      <b-button v-b-modal.create-modal variant="primary">
-        <icon class="align-middle" name="plus"></icon>
-        <span class="align-middle ml-1">New Package</span>
-      </b-button>
-      <b-button>
-        <icon class="align-middle" name="refresh"></icon>
-      </b-button>
-    </b-button-group>
+  <div class="row">
+    <div class="col">
+      <b-button-group>
+        <b-button v-b-modal.create-modal variant="primary">
+          <icon class="align-middle" name="plus"></icon>
+          <span class="align-middle ml-1">New Package</span>
+        </b-button>
+        <b-button @click="refreshTable">
+          <icon class="align-middle" name="refresh"></icon>
+        </b-button>
+      </b-button-group>
+    </div>
   </div>
+  <b-table ref="packagesTable" class="mt-3" responsive hover :items="packageData" :fields="tableFields">
+    <template slot="slug" slot-scope="data">
+      <b-link :to="'/manage/packages/' + data.value">
+        {{data.value}}
+      </b-link>
+    </template>
+  </b-table>
+  <b-pagination :total-rows="totalRows" v-model="currentPage" :per-page="30"></b-pagination>
 
   <b-modal id="create-modal" size="lg" title="New Package" ref="createModal">
     <b-form ref="packageForm" @submit="submitForm">
@@ -108,6 +118,19 @@ export default {
   },
   data() {
     return {
+      tableFields: [
+        'slug',
+        'description',
+        'publish_date',
+        'last_fetched_date',
+        {
+          key: 'gdrive_url',
+          label: 'GDrive Link',
+          formatter: (url) => {
+            return "<a target=\"_blank\" href=\"" + url + "\">Go</a>"
+          }
+        }
+      ],
       form: {
         slug: "",
         description: "",
@@ -120,10 +143,25 @@ export default {
         drive_folder_url: null,
         publish_date: null
       },
-      submitted: false
+      submitted: false,
+      currentPage: 1,
+      totalRows: 0
     };
   },
   methods: {
+    refreshTable: function() {
+      this.$refs.packagesTable.refresh()
+    },
+    packageData: function(ctx) {
+      let promise = axios.get("/api/packages")
+      return promise.then((res) => {
+          const items = res.data
+          this.currentPage = items.meta.current_page
+          this.totalRows = items.meta.total
+          console.log(items)
+          return items.data
+        })
+    },
     submitForm: function(evt) {
       //evt.preventDefault();
       // if(this.$refs.packageForm.$el.checkValidity() === false) {

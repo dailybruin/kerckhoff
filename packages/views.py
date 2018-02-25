@@ -2,18 +2,32 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
 from django.views.decorators.http import require_http_methods, require_GET
+from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
+
 import json
 from .models import Package
 from .forms import PackageForm
-from django.forms.models import model_to_dict
 
 @require_http_methods(['GET', 'POST'])
 def list_or_create(request):
     if request.method == 'GET':
         # List objects
+        page_num = request.GET.get("page", 1)
         packages = Package.objects.all()
-        response = serializers.serialize('json', packages)
-        return HttpResponse(response, content_type='application/json')
+        paginator = Paginator(packages, 30)
+        page = paginator.get_page(page_num)
+        meta = {
+            "total": paginator.count,
+            "num_pages": paginator.num_pages,
+            "current_page": page_num
+        }
+        results = [ model.as_dict() for model in page]
+        return JsonResponse({
+            "meta": meta,
+            "data": results
+        })
     elif request.method == 'POST':
         # Create object
         data = json.loads(request.body)

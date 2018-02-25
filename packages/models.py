@@ -14,9 +14,21 @@ class Package(models.Model):
     drive_folder_id = models.CharField(max_length=512)
     drive_folder_url = models.URLField()
     images = ArrayField(JSONField(), default=list)
+    processing = models.BooleanField(default=False)
     cached_article_preview = models.TextField()
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True)
+
+    def as_dict(self):
+        return {
+            "slug": self.slug,
+            "description": self.description,
+            "gdrive_url": self.drive_folder_url,
+            "images": self.images,
+            "article": self.cached_article_preview,
+            "publish_date": self.publish_date,
+            "last_fetched_date": self.last_fetched_date
+        }
 
     def setup_and_save(self, user):
         google = get_oauth2_session(user)

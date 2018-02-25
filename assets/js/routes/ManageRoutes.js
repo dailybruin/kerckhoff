@@ -5,6 +5,7 @@ import Manage from "../components/Manage";
 import ManageDisplay from "../components/management/ManageDisplay";
 import NewSite from "../components/management/NewSite";
 import Packages from "../components/management/Packages";
+import PackageView from "../components/management/PackageView";
 
 Vue.use(Router);
 
@@ -27,7 +28,11 @@ const routes = [
       },
       {
         path: "packages",
-        component: Packages
+        component: Packages,
+      },
+      {
+        path: "packages/:slug",
+        component: PackageView
       }
     ]
   }

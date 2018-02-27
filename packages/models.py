@@ -13,11 +13,11 @@ class Package(models.Model):
     description = models.TextField()
     drive_folder_id = models.CharField(max_length=512)
     drive_folder_url = models.URLField()
-    images = ArrayField(JSONField(), default=list)
+    images = ArrayField(JSONField(), default=list, blank=True)
     processing = models.BooleanField(default=False)
     cached_article_preview = models.TextField()
     publish_date = models.DateField()
-    last_fetched_date = models.DateField(null=True)
+    last_fetched_date = models.DateField(null=True, blank=True)
 
     def as_dict(self):
         return {
@@ -36,10 +36,53 @@ class Package(models.Model):
             url, drive_id = create_package(google, self)
             self.drive_folder_id = drive_id
             self.drive_folder_url = url
+        else:
+            self.drive_folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
         self.cached_article_preview = ""
         self.images = []
         self.save()
         return self
+
+    # TODO - put this in a workqueue
+    def fetch_from_gdrive(self, user):
+        google = get_oauth2_session(user)
+        text, images = list_folder(google, self)
+        self.cached_article_preview = text[3:]
+        self.images = images
+        self.save()
+        return self
+
+def img_check(filename):
+    valid_extensions = [".jpeg", ".png", ".jpg", ".gif", ".webp"]
+    for ext in valid_extensions:
+        if ext in filename:
+            return True
+    return False
+
+def list_folder(session, package):
+    
+    text = """### No article document was found in this package!\n""",
+    images = []
+    
+    payload = {
+        "q": "'%s' in parents" % package.drive_folder_id
+    }
+    # we assume there's always less than 100 files in a package. change this if assumption untrue
+    res = session.get(PREFIX + "/v2/files", params=payload)
+    print("RES:")
+    items = res.json()['items']
+    article = list(filter(lambda f: "article" in f['title'], items))
+    images = list(filter(img_check, items))
+
+    print(article)
+    print(images)
+
+    # only taking the first one - assuming there's only one article file
+    if len(article) >= 1:
+        data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
+        text = data.text
+
+    return text, images
 
 def create_package(session, package):
     payload = {

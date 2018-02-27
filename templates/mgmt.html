@@ -9,5 +9,6 @@
 <script type="text/javascript">
     let info = {{ user_info | safe }};        
 </script>
+{% render_bundle 'common' %}
 {% render_bundle 'management' %}
 {% endblock %}

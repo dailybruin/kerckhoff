@@ -5,6 +5,8 @@ var BundleTracker = require("webpack-bundle-tracker");
 module.exports = {
   context: __dirname,
 
+  mode: process.env.DEBUG === "on" ? "development" : "production",
+
   entry: {
     main: "./assets/js/main",
     management: "./assets/js/management"
@@ -19,6 +21,18 @@ module.exports = {
     extensions: [".js", ".vue"],
     alias: {
       vue: "vue/dist/vue.js"
+    }
+  },
+
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "common",
+          chunks: "all"
+        }
+      }
     }
   },
 

@@ -1,7 +1,11 @@
 import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
+
+// Icon imports
+import "vue-awesome/icons/plus";
+import "vue-awesome/icons/refresh";
+
 import Icon from "vue-awesome/components/Icon";
-import "vue-awesome/icons";
 import MainModule from "./MainModule";
 import router from "./routes/MainRoutes";
 import utils from "./util";

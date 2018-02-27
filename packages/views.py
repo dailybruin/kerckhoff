@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
-from django.views.decorators.http import require_http_methods, require_GET
+from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
@@ -44,8 +44,11 @@ def list_or_create(request):
 
 @require_GET
 def show_one(request, id):
-    package = Package.objects.get(id=id).values()
-    response = serializers.serialize('json', package)
-    return HttpResponse(response, content_type='application/json')
+    package = Package.objects.get(slug=id)
+    return JsonResponse(model_to_dict(package))
     
-    
+@require_POST
+def update_package(request, id):
+    package = Package.objects.get(slug=id)
+    res = package.fetch_from_gdrive(request.user)
+    return JsonResponse(model_to_dict(res))

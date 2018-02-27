@@ -163,12 +163,6 @@ export default {
         })
     },
     submitForm: function(evt) {
-      //evt.preventDefault();
-      // if(this.$refs.packageForm.$el.checkValidity() === false) {
-      //   this.$refs.packageForm.validated = true
-
-      // }
-      // this.$refs.packageForm.validated = true
       console.log(this.form)
       this.submitted = true;
       let res = axios.post("/api/packages", this.form)
@@ -187,6 +181,7 @@ export default {
             publish_date: null
           }
           this.$refs.createModal.hide()
+          this.refreshTable()
         })
         .catch((err) => {
           console.log(err.response);

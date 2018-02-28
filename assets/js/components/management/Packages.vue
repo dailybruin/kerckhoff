@@ -153,7 +153,7 @@ export default {
       this.$refs.packagesTable.refresh()
     },
     packageData: function(ctx) {
-      let promise = axios.get("/api/packages")
+      let promise = axios.get("/api/packages/")
       return promise.then((res) => {
           const items = res.data
           this.currentPage = items.meta.current_page
@@ -165,7 +165,7 @@ export default {
     submitForm: function(evt) {
       console.log(this.form)
       this.submitted = true;
-      let res = axios.post("/api/packages", this.form)
+      let res = axios.post("/api/packages/", this.form)
         .then((res) => {
           console.log(res)
           this.form = {

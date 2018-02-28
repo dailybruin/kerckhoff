@@ -4,6 +4,7 @@ import BootstrapVue from "bootstrap-vue";
 // Icon imports
 import "vue-awesome/icons/plus";
 import "vue-awesome/icons/refresh";
+import "vue-awesome/icons/search";
 
 import Icon from "vue-awesome/components/Icon";
 import MainModule from "./MainModule";

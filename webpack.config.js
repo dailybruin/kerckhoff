@@ -5,7 +5,7 @@ var BundleTracker = require("webpack-bundle-tracker");
 module.exports = {
   context: __dirname,
 
-  mode: process.env.DEBUG === "on" ? "development" : "production",
+  mode: process.env.DEBUG != "off" ? "development" : "production",
 
   entry: {
     main: "./assets/js/main",

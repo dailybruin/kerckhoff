@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods, require_GET, requ
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
-
+from django.core.exceptions import ValidationError
 import json
 from .models import Package
 from .forms import PackageForm
@@ -35,7 +35,10 @@ def list_or_create(request):
         if form_data.is_valid():
             model_instance = form_data.save(commit=False)
             print(model_instance)
-            m = model_instance.setup_and_save(request.user)
+            try:
+                m = model_instance.setup_and_save(request.user)
+            except ValidationError as e:
+                return JsonResponse(e.message_dict, status=400)
             return JsonResponse(model_to_dict(m), status=201)
         else:
             return JsonResponse(form_data.errors, status=400)
@@ -46,7 +49,8 @@ def list_or_create(request):
 def show_one(request, id):
     package = Package.objects.get(slug=id)
     return JsonResponse(model_to_dict(package))
-    
+
+
 @require_POST
 def update_package(request, id):
     package = Package.objects.get(slug=id)

@@ -15,22 +15,33 @@ import boto3
 import pathlib
 import imghdr
 import CloudFlare
+import re
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
 PREFIX = "https://www.googleapis.com/drive"
 cf = CloudFlare.CloudFlare()
+IMAGE_REGEX = re.compile(r"!\[[^\]]+\]\(([^)]+)\)")
+
+#class PackageSet(models.Model):
+#    slug = models.SlugField(max_length=32, primary_key=True)
+#    drive_folder_url = models.URLField()
+#    drive_folder_id = models.CharField(max_length=512)
+#    def setup_and_save(self, user):
+
 
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
     description = models.TextField()
     drive_folder_id = models.CharField(max_length=512)
     drive_folder_url = models.URLField()
+    metadata = JSONField(blank=True, default=dict, null=True)
     images = JSONField(blank=True, default=dict, null=True)
     processing = models.BooleanField(default=False)
     cached_article_preview = models.TextField()
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True, blank=True)
+#    package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
 
     def as_dict(self):
         return {
@@ -83,6 +94,10 @@ class Package(models.Model):
             self.save()
 
         return self
+
+#def rewrite_image_url(package):
+#    IMAGE_REGEX.findall(package.cached_article_preview)
+
 
 def img_check(item):
     valid_extensions = [".jpeg", ".png", ".jpg", ".gif", ".webp"]

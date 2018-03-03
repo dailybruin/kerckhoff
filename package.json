@@ -48,6 +48,8 @@
     "babel": "^6.23.0",
     "bootstrap": "^4.0.0",
     "bootstrap-vue": "^2.0.0-rc.1",
+    "front-matter": "^2.3.0",
+    "gray-matter": "^3.1.1",
     "js-cookie": "^2.2.0",
     "marked": "^0.3.16",
     "vue": "^2.5.13",

@@ -23,25 +23,65 @@ PREFIX = "https://www.googleapis.com/drive"
 cf = CloudFlare.CloudFlare()
 IMAGE_REGEX = re.compile(r"!\[[^\]]+\]\(([^)]+)\)")
 
-#class PackageSet(models.Model):
-#    slug = models.SlugField(max_length=32, primary_key=True)
-#    drive_folder_url = models.URLField()
-#    drive_folder_id = models.CharField(max_length=512)
-#    def setup_and_save(self, user):
+class PackageSet(models.Model):
+    slug = models.SlugField(max_length=32, primary_key=True)
+    drive_folder_id = models.CharField(max_length=512, blank=True)
+    drive_folder_url = models.URLField()
 
+    def as_dict(self):
+        return {
+            "slug": self.slug,
+            "gdrive_url": self.drive_folder_url,
+        }
+
+    def save(self, *args, **kwargs):
+        self.drive_folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
+        super().save(*args, **kwargs)
+
+    def populate(self, user):
+        print("Starting populate for %s" % self.slug)
+        google = get_oauth2_session(user)
+        _, _, folders = list_folder(google, self)
+        instances = []
+        for folder in folders:
+            try:
+                exists = Package.objects.get(slug=folder["title"])
+                instances.append(exists)
+            except Package.DoesNotExist:
+                pkg = Package.objects.create(
+                    slug=folder["title"],
+                    drive_folder_id=folder["id"],
+                    drive_folder_url=folder["alternateLink"],
+                    publish_date=timezone.now(),
+                    package_set=self
+                )
+                instances.append(pkg)
+        for instance in instances:
+            print("Processing %s" % instance.slug)
+            try:
+                instance.fetch_from_gdrive(user)
+            except Exception as e:
+                print("%s failed with error: %s" % (instance.slug, e))
+                continue
 
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     drive_folder_id = models.CharField(max_length=512)
     drive_folder_url = models.URLField()
     metadata = JSONField(blank=True, default=dict, null=True)
     images = JSONField(blank=True, default=dict, null=True)
     processing = models.BooleanField(default=False)
-    cached_article_preview = models.TextField()
+    cached_article_preview = models.TextField(blank=True)
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True, blank=True)
-#    package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
+    package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
+
+    def as_endpoints(self):
+        return {
+            "slug": self.slug,
+            "endpoint": "/api/packages/" + self.package_set.slug + "/" + self.slug
+        }
 
     def as_dict(self):
         return {
@@ -54,7 +94,7 @@ class Package(models.Model):
             "last_fetched_date": self.last_fetched_date
         }
 
-    def setup_and_save(self, user):
+    def setup_and_save(self, user, pset_slug):
         google = get_oauth2_session(user)
         if self.drive_folder_url == "":
             url, drive_id = create_package(google, self)
@@ -70,6 +110,7 @@ class Package(models.Model):
             print(results)
         self.cached_article_preview = ""
         self.images = []
+        self.package_set = pset_slug
         self.save()
         return self
 
@@ -77,15 +118,15 @@ class Package(models.Model):
     def fetch_from_gdrive(self, user):
         self.processing = True
         self.save()
-
         try:
             google = get_oauth2_session(user)
-            text, images = list_folder(google, self)
-            self.cached_article_preview = text[3:]
+            text, images, _ = list_folder(google, self)
+            self.cached_article_preview = text
             if self.images is None:
                 self.images = {}
             self.images["gdrive"] = images
             transfer_to_s3(google, self)
+            self.cached_article_preview = rewrite_image_url(self)
             self.last_fetched_date = timezone.now()
         except Exception as e:
             raise e
@@ -95,9 +136,15 @@ class Package(models.Model):
 
         return self
 
-#def rewrite_image_url(package):
-#    IMAGE_REGEX.findall(package.cached_article_preview)
-
+def rewrite_image_url(package):
+    def replace_url(fn):
+        #print(fn.group(1).replace)
+        if fn.group(1) in package.images["s3"]:
+            return fn.group().replace(fn.group(1), package.images["s3"][fn.group(1)]["url"])
+        else:
+            return fn.group()
+    text = IMAGE_REGEX.sub(replace_url,package.cached_article_preview)
+    return text
 
 def img_check(item):
     valid_extensions = [".jpeg", ".png", ".jpg", ".gif", ".webp"]
@@ -175,17 +222,19 @@ def get_file(session, file_id, download=False):
         return res.json()
 
 def list_folder(session, package):
-    text = "...### No article document was found in this package!\n"
+    text = "### No article document was found in this package!\n"
     images = []
     
     payload = {
-        "q": "'%s' in parents" % package.drive_folder_id
+        "q": "'%s' in parents" % package.drive_folder_id,
+        "maxResults": 1000
     }
     # we assume there's always less than 100 files in a package. change this if assumption untrue
     res = session.get(PREFIX + "/v2/files", params=payload)
     items = res.json()['items']
     article = list(filter(lambda f: "article" in f['title'], items))
     images = list(filter(img_check, items))
+    folders = list(filter(lambda f: f["mimeType"] == "application/vnd.google-apps.folder", items))
     #print("RES:")
     #print(article)
     #print(images)
@@ -193,9 +242,10 @@ def list_folder(session, package):
     # only taking the first one - assuming there's only one article file
     if len(article) >= 1:
         data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
-        text = data.text
+        text = data.content.decode('utf-8')
+        #print(text.decode('utf-8'))
     # this will take REALLY long.
-    return text, images
+    return text, images, folders
 
 def create_package(session, package, existing=False):
     payload = {

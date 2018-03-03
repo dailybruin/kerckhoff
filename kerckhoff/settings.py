@@ -30,7 +30,10 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+if not DEBUG:
+    ALLOWED_HOSTS = [ env('SITE_HOST'), ]
+else:
+    ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'webpack_loader',
+    'corsheaders',
 
     'allauth',
     'allauth.account',
@@ -58,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -174,7 +179,11 @@ WEBPACK_LOADER = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/manage/'
+
+# CORS
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
 
 # Other stuff
 
@@ -182,3 +191,5 @@ S3_SITE_UPLOAD_BUCKET = env('S3_SITE_UPLOAD_BUCKET')
 S3_ASSETS_UPLOAD_BUCKET = env('S3_ASSETS_UPLOAD_BUCKET')
 REPOSITORY_FOLDER_ID = env("REPOSITORY_FOLDER_ID")
 CF_ZONE = env('CF_ZONE')
+
+LOGIN_REDIRECT_URL = '/manage/'

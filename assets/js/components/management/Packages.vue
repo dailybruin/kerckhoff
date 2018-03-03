@@ -1,27 +1,33 @@
 <template>
 <div class="container">
-  <div class="row">
-    <div class="col">
-      <b-button-group>
-        <b-button v-b-modal.create-modal variant="primary">
-          <icon class="align-middle" name="plus"></icon>
-          <span class="align-middle ml-1">New Package</span>
-        </b-button>
-        <b-button @click="refreshTable">
-          <icon class="align-middle" name="refresh"></icon>
-        </b-button>
-      </b-button-group>
-    </div>
-  </div>
-  <b-table ref="packagesTable" class="mt-3" responsive hover :items="packageData" :fields="tableFields">
-    <template slot="slug" slot-scope="data">
-      <b-link :to="'/manage/packages/' + data.value">
-        {{data.value}}
-      </b-link>
-    </template>
-  </b-table>
-  <b-pagination :total-rows="totalRows" v-model="currentPage" :per-page="30"></b-pagination>
-
+  <b-tabs v-model="tabIndex">
+    <b-tab v-for="packageSet in packageSets" :title="packageSet.slug">
+      <div class="row mt-3">
+        <div class="col">
+          <b-button-group>
+            <b-button v-b-modal.create-modal variant="primary">
+              <icon class="align-middle" name="plus"></icon>
+              <span class="align-middle ml-1">New Package</span>
+            </b-button>
+            <b-button @click="refreshTable">
+              <icon class="align-middle" name="refresh"></icon>
+            </b-button>
+            <b-button target="_blank" :href="packageSet.gdrive_url" variant="success">
+              <icon class="align-middle" name="hdd-o"></icon>
+            </b-button>
+          </b-button-group>
+        </div>
+      </div>
+      <b-table ref="packagesTable" class="mt-3" responsive hover :items="packageData" :fields="tableFields">
+        <template slot="slug" slot-scope="data">
+          <b-link :to="'/manage/packages/' + packageSet.slug + '/' + data.value">
+            {{data.value}}
+          </b-link>
+        </template>
+      </b-table>
+      <b-pagination :total-rows="totalRows" v-model="currentPage" :per-page="30"></b-pagination>
+    </b-tab>
+  </b-tabs>
   <b-modal id="create-modal" size="lg" title="New Package" ref="createModal">
     <b-form ref="packageForm" @submit="submitForm">
       <div class="container" fluid>
@@ -114,10 +120,39 @@ export default {
       }
       console.log("no err")
       return false
+    },
+    tabIndex: {
+      get: function() {
+        this.packageSets.findIndex((ps) => {
+          return ps.slug == this.packageSet
+        })
+      },
+      set: function(idx) {
+        if(idx) {
+          this.packageSetDetails = this.packageSets[idx]
+          this.packageSet = this.packageSets[idx].slug
+        }
+      }
     }
+  },
+  beforeMount: function() {
+    if(this.$route.params.pset) {
+      this.packageSet = this.$route.params.pset
+    }
+    axios.get("/api/packages/")
+    .then((res) => {
+      this.packageSets = res.data.data;
+      if(!this.packageSet) {
+        this.packageSetDetails = this.packageSets[0]
+        this.packageSet = this.packageSets[0].slug
+      }
+    })
   },
   data() {
     return {
+      packageSet: "",
+      packageSetDetails: {},
+      packageSets: [],
       tableFields: [
         'slug',
         'description',
@@ -153,7 +188,7 @@ export default {
       this.$refs.packagesTable.refresh()
     },
     packageData: function(ctx) {
-      let promise = axios.get("/api/packages/")
+      let promise = axios.get("/api/packages/" + this.packageSet)
       return promise.then((res) => {
           const items = res.data
           this.currentPage = items.meta.current_page
@@ -165,7 +200,7 @@ export default {
     submitForm: function(evt) {
       console.log(this.form)
       this.submitted = true;
-      let res = axios.post("/api/packages/", this.form)
+      let res = axios.post("/api/packages/" + this.packageSet, this.form)
         .then((res) => {
           console.log(res)
           this.form = {

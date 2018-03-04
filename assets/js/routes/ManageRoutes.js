@@ -6,6 +6,7 @@ import ManageDisplay from "../components/management/ManageDisplay";
 import NewSite from "../components/management/NewSite";
 import Packages from "../components/management/Packages";
 import PackageView from "../components/management/PackageView";
+import Pages from "../components/management/Pages";
 
 Vue.use(Router);
 
@@ -23,12 +24,18 @@ const routes = [
         component: ManageDisplay
       },
       {
-        path: "new",
-        component: NewSite
+        path: "pages",
+        component: Pages,
+        children: [
+          {
+            path: "new",
+            component: NewSite
+          }
+        ]
       },
       {
         path: "packages",
-        component: Packages,
+        component: Packages
       },
       {
         path: "packages/:slug",

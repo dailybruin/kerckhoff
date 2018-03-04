@@ -247,7 +247,8 @@ def list_folder(session, package):
         else:     
             data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
             text = data.content.decode('utf-8')
-        #print(text.decode('utf-8'))
+        # fix indentation for yaml
+        text = text.replace("\t", "  ")
     # this will take REALLY long.
     return text, images, folders
 

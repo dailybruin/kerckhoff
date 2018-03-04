@@ -1,7 +1,7 @@
 <template>
 <div class="container">
   <b-tabs v-model="tabIndex">
-    <b-tab v-for="packageSet in packageSets" :title="packageSet.slug">
+    <b-tab v-for="packageSet in packageSets" :key="packageSet.slug" :title="packageSet.slug">
       <div class="row mt-3">
         <div class="col">
           <b-button-group>
@@ -131,6 +131,8 @@ export default {
         if(idx) {
           this.packageSetDetails = this.packageSets[idx]
           this.packageSet = this.packageSets[idx].slug
+          console.log(this.$refs.packagesTable[idx].refresh)
+          this.refreshTable();
         }
       }
     }
@@ -185,7 +187,10 @@ export default {
   },
   methods: {
     refreshTable: function() {
-      this.$refs.packagesTable.refresh()
+      let idx = this.packageSets.findIndex((ps) => {
+        return ps.slug == this.packageSet
+      })
+      this.$refs.packagesTable[idx].refresh()
     },
     packageData: function(ctx) {
       let promise = axios.get("/api/packages/" + this.packageSet)

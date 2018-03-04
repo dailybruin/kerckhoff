@@ -109,8 +109,8 @@ class Package(models.Model):
             results = add_to_repo_folder(google, self)
             print(results)
         self.cached_article_preview = ""
-        self.images = []
-        self.package_set = pset_slug
+        self.images = {}
+        self.package_set = PackageSet.objects.get(slug=pset_slug)
         self.save()
         return self
 
@@ -241,8 +241,12 @@ def list_folder(session, package):
 
     # only taking the first one - assuming there's only one article file
     if len(article) >= 1:
-        data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
-        text = data.content.decode('utf-8')
+        if article[0]['mimeType'] != "application/vnd.google-apps.document":
+            req = get_file(session, article[0]['id'], download=True)
+            text = req.content.decode('utf-8')
+        else:     
+            data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
+            text = data.content.decode('utf-8')
         #print(text.decode('utf-8'))
     # this will take REALLY long.
     return text, images, folders

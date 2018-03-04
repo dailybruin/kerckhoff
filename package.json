@@ -7,6 +7,7 @@
     "precommit": "lint-staged",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
+    "debug": "webpack -v",
     "watch": "webpack --watch",
     "profile": "webpack --profile --json > stats.json"
   },

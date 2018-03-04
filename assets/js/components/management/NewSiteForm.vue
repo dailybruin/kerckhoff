@@ -34,16 +34,10 @@
                     label="Food:"
                     label-for="exampleInput3">
         <b-form-select id="exampleInput3"
-                      :options="foods"
+                      :options="type"
                       required
                       v-model="form.food">
         </b-form-select>
-      </b-form-group>
-      <b-form-group id="exampleGroup4">
-        <b-form-checkbox-group v-model="form.checked" id="exampleChecks">
-          <b-form-checkbox value="me">Check me out</b-form-checkbox>
-          <b-form-checkbox value="that">Check that out</b-form-checkbox>
-        </b-form-checkbox-group>
       </b-form-group>
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button type="reset" variant="danger">Reset</b-button>
@@ -70,34 +64,18 @@
           food: null,
           checked: []
         },
-        foods: [
+        type: [
           { text: 'Select One', value: null },
-          'Carrots', 'Beans', 'Tomatoes', 'Corn'
+          'Series', 'One-off'
         ],
         show: true,
         myToggle: false
       }
     },
-    computed: {
-      btnStates () {
-        return "success"
-      }
-    },
-    methods: {
-      onSubmit (evt) {
-        evt.preventDefault();
-        alert(JSON.stringify(this.form));
-      },
-      onReset (evt) {
-        evt.preventDefault();
-        /* Reset our form values */
-        this.form.email = '';
-        this.form.name = '';
-        this.form.food = null;
-        this.form.checked = [];
-        /* Trick to reset/clear native browser form validation state */
-        this.show = false;
-        this.$nextTick(() => { this.show = true });
+      computed: {
+        btnStates () {
+          return "success"
+        }
       }
     }
   }

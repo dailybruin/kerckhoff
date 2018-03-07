@@ -5,6 +5,7 @@ import BootstrapVue from "bootstrap-vue";
 import "vue-awesome/icons/plus";
 import "vue-awesome/icons/refresh";
 import "vue-awesome/icons/search";
+import "vue-awesome/icons/hdd-o";
 
 import Icon from "vue-awesome/components/Icon";
 import VueUploadComponent from "vue-upload-component";

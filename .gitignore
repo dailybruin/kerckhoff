@@ -111,3 +111,5 @@ assets/bundles/
 .Trashes
 
 stats.json
+
+static/

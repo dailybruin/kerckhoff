@@ -38,7 +38,11 @@ const routes = [
         component: Packages
       },
       {
-        path: "packages/:slug",
+        path: "packages/:pset",
+        component: Packages
+      },
+      {
+        path: "packages/:pset/:slug",
         component: PackageView
       }
     ]

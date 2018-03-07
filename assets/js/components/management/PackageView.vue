@@ -4,8 +4,8 @@
       <div class="col">
       <h2>
         {{ packageData.slug || $route.params.slug }}
-        <b-button class="ml-2" size="sm" variant="secondary" :disabled="isFetching" @click="fetchGdrive">
-          <span v-if="isFetching">
+        <b-button class="ml-2" size="sm" variant="secondary" :disabled="isReallyFetching" @click="fetchGdrive">
+          <span v-if="isReallyFetching">
             Fetching...
           </span>
           <span v-else>
@@ -18,7 +18,7 @@
     <div class="col">
     <div class="row">
       <h5 class="text-muted">
-        {{ packageData.description }}
+        {{ packageData.description }} | <a :href="packageData ? packageData.drive_folder_url : '#'" :disabled="isLoading"><small>Link</small></a>
       </h5>
     </div>
     </div>
@@ -28,27 +28,66 @@
           Loading...
         </h3>
         <div v-else>
+          <h5>Metadata</h5>
+          <pre><code>{{fmMetaPretty}}</code></pre>
+
           <h5>Preview</h5>
-          <div v-html="compiledMd"></div>
+          <div class="preview" v-html="compiledMd"></div>
+        </div>
+      </div>
+      <div class="col-md-4" v-if="!isLoading">
+        <h5>Images</h5>
+        <div v-for="(image, key) in packageData.images.s3">
+          <b-card :img-src="image.url"
+                  :img-alt="image.key"
+                  img-top class="mb-3">
+              <p class="card-text">
+                  <samp class="small">{{ image.url }}</samp>
+              </p>
+          </b-card>
         </div>
       </div>
     </div>
   </div>
 </template>
 
+<style lang="scss">
+.preview img {
+  max-width: 100%;
+}
+
+code {
+  max-width: 100%;
+}
+
+</style>
+
+
+
 <script>
 import {axios, utils} from "../../util";
 import Vue from "vue";
 import marked from "marked";
+import matter from "gray-matter";
 
 export default {
   name: 'package-view',
   computed: {
+    isReallyFetching: function() {
+      return this.isFetching || this.packageData.processing;
+    },
+    fmMetaPretty: function() {
+      if(!this.packageData.cached_article_preview)
+        return {}
+      else {
+        return JSON.stringify(matter(this.packageData.cached_article_preview).data, null, 2)
+      }
+    },
     compiledMd: function() {
       if(!this.packageData.cached_article_preview)
-        return ""
+        return "Package is not fetched."
       else {
-        return marked(this.packageData.cached_article_preview, { sanitize: true })
+        return marked(matter(this.packageData.cached_article_preview).content, { sanitize: true })
       }
     }
   },
@@ -60,7 +99,7 @@ export default {
     }
   },
   beforeMount: function() {
-    axios.get("/api/packages/" + this.$route.params.slug + "/")
+    axios.get("/api/packages/" + this.$route.params.pset + "/" + this.$route.params.slug + "/")
       .then((res) => {
         this.packageData = res.data;
         this.isLoading = false;
@@ -70,14 +109,14 @@ export default {
   methods: {
     fetchGdrive: function() {
       this.isFetching = true;
-      axios.post("/api/packages/" + this.$route.params.slug + "/fetch")
+      axios.post("/api/packages/" + this.$route.params.pset + "/" + this.$route.params.slug + "/fetch")
         .then((res) => {
           console.log("Done fetching........")
           this.isFetching = false;
           console.log(res.data);
           this.packageData = res.data;
         })
-    }
+    },
   }
 }
 </script>

@@ -25,14 +25,13 @@ const routes = [
       },
       {
         path: "pages",
-        component: Pages,
-        children: [
-          {
-            path: "new",
-            component: NewSite
-          }
-        ]
+        component: Pages
       },
+      {
+        path: "pages/new",
+        component: NewSite
+      },
+
       {
         path: "packages",
         component: Packages

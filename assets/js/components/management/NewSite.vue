@@ -1,61 +1,67 @@
 <template>
-  <div class="example-drag">
-    <div class="upload">
-      <ul v-if="files.length">
-        <li v-for="(file, index) in files" :key="file.id">
-          <span>{{file.name}}</span> -
-          <span>{{file.size}}</span> -
-          <span>{{file.s3_state}}</span>
-          <span v-if="file.error">{{file.error}}</span>
-          <span v-else-if="file.success">success</span>
-          <span v-else-if="file.active">active</span>
-          <span v-else-if="file.active">active</span>
-          <span v-else></span>
-        </li>
-      </ul>
-      <ul v-else>
-        <td colspan="7">
-          <div class="text-center p-5">
-            <h4>Drop files anywhere to upload<br/>or</h4>
-            <label for="file" class="btn btn-lg btn-primary">Select Files</label>
-          </div>
-        </td>
-      </ul>
+  <div class="container">
 
-      <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
-    		<h3>Drop files to upload</h3>
+    <div class="row mt-3">
+      <div class="example-drag">
+        <div class="upload">
+          <ul v-if="files.length">
+            <li v-for="(file, index) in files" :key="file.id">
+              <span>{{file.name}}</span> -
+              <span>{{file.size}}</span> -
+              <span>{{file.s3_state}}</span>
+              <span v-if="file.error">{{file.error}}</span>
+              <span v-else-if="file.success">success</span>
+              <span v-else-if="file.active">active</span>
+              <span v-else-if="file.active">active</span>
+              <span v-else></span>
+            </li>
+          </ul>
+          <ul v-else>
+            <td colspan="7">
+              <div class="text-center p-5">
+                <h4>Drop files anywhere to upload or</h4>
+                <label for="file" class="btn btn-lg btn-primary">Select Files</label>
+              </div>
+            </td>
+          </ul>
+        </div>
       </div>
+    </div>
 
-      <div class="example-btn">
-        <file-upload
-          class="btn btn-primary"
-          :multiple="true"
-          :drop="true"
-          :drop-directory="true"
-          v-model="files"
-          @input-file="inputFile"
-          ref="upload">
-          <i class="fa fa-plus"></i>
-          Select files
-        </file-upload>
-        <button type="button" class="btn btn-success"
-          v-if="readyForUpload && (!$refs.upload || !$refs.upload.active) "
-          @click.prevent="$refs.upload.active == true">
-          <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Start Upload
-        </button>
-      </div>
+    <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
+    	<h3>Drop files to upload</h3>
+    </div>
 
-      <br/>
-      <div class="progresss-bar">
-        <h5>Progress:<br/></h5>
-        <b-progress :value="progress" variant="info" :max="max" show-progress animated></b-progress>
-      </div>
-
+     <div class="example-btn">
+            <file-upload
+              class="btn btn-primary"
+              :multiple="true"
+              :drop="true"
+              :drop-directory="true"
+              v-model="files"
+              @input-file="inputFile"
+              ref="upload">
+              <i class="fa fa-plus"></i>
+              Select files
+            </file-upload>
+            <button type="button" class="btn btn-success"
+              v-if="readyForUpload && (!$refs.upload || !$refs.upload.active) "
+              @click.prevent="$refs.upload.active == true">
+              <i class="fa fa-arrow-up" aria-hidden="true"></i>
+              Start Upload
+            </button>
+    </div>
+   
+    <div class="row mt-3">
+        <div class="progresss-bar" v-if="readyForUpload && (!$refs.upload || !$refs.upload.active)">
+          <h5>Progress:<br/></h5>
+          <b-progress :value="progress" variant="info" :max="max" show-progress animated></b-progress>
+        </div>
     </div>
 
   </div>
 </template>
+
 <style>
 .example-drag label.btn {
   margin-bottom: 0;

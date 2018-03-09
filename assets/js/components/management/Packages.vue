@@ -1,18 +1,34 @@
 <template>
 <div class="container">
-  <div class="col">
-    <b-button-group>
-      <b-button v-b-modal.create-modal variant="primary">
-        <icon class="align-middle" name="plus"></icon>
-        <span class="align-middle ml-1">New Package</span>
-      </b-button>
-      <b-button>
-        <icon class="align-middle" name="refresh"></icon>
-      </b-button>
-    </b-button-group>
-  </div>
-
-  <b-modal id="create-modal" size="lg" title="New Package">
+  <b-tabs v-model="tabIndex">
+    <b-tab v-for="packageSet in packageSets" :key="packageSet.slug" :title="packageSet.slug">
+      <div class="row mt-3">
+        <div class="col">
+          <b-button-group>
+            <b-button v-b-modal.create-modal variant="primary">
+              <icon class="align-middle" name="plus"></icon>
+              <span class="align-middle ml-1">New Package</span>
+            </b-button>
+            <b-button @click="refreshTable">
+              <icon class="align-middle" name="refresh"></icon>
+            </b-button>
+            <b-button target="_blank" :href="packageSet.gdrive_url" variant="success">
+              <icon class="align-middle" name="hdd-o"></icon>
+            </b-button>
+          </b-button-group>
+        </div>
+      </div>
+      <b-table ref="packagesTable" class="mt-3" responsive hover :items="packageData" :fields="tableFields">
+        <template slot="slug" slot-scope="data">
+          <b-link :to="'/manage/packages/' + packageSet.slug + '/' + data.value">
+            {{data.value}}
+          </b-link>
+        </template>
+      </b-table>
+      <b-pagination :total-rows="totalRows" v-model="currentPage" :per-page="30"></b-pagination>
+    </b-tab>
+  </b-tabs>
+  <b-modal id="create-modal" size="lg" title="New Package" ref="createModal">
     <b-form ref="packageForm" @submit="submitForm">
       <div class="container" fluid>
           <b-form-group id="slug-label"
@@ -78,7 +94,7 @@
       </div>
     </b-form>
     <div slot="modal-footer" class="w-100">
-      <b-btn variant="primary" v-if="hasError || !submitted" @click="submitForm">
+      <b-btn variant="primary" v-if="!submitted" @click="submitForm">
         Submit
       </b-btn>
       <h4 v-else>
@@ -104,10 +120,54 @@ export default {
       }
       console.log("no err")
       return false
+    },
+    tabIndex: {
+      get: function() {
+        this.packageSets.findIndex((ps) => {
+          return ps.slug == this.packageSet
+        })
+      },
+      set: function(idx) {
+        if(idx) {
+          this.packageSetDetails = this.packageSets[idx]
+          this.packageSet = this.packageSets[idx].slug
+          console.log(this.$refs.packagesTable[idx].refresh)
+          this.refreshTable();
+        }
+      }
     }
+  },
+  beforeMount: function() {
+    if(this.$route.params.pset) {
+      this.packageSet = this.$route.params.pset
+    }
+    axios.get("/api/packages/")
+    .then((res) => {
+      this.packageSets = res.data.data;
+      if(!this.packageSet) {
+        this.packageSetDetails = this.packageSets[0]
+        this.packageSet = this.packageSets[0].slug
+      }
+    })
   },
   data() {
     return {
+      packageSet: "",
+      packageSetDetails: {},
+      packageSets: [],
+      tableFields: [
+        'slug',
+        'description',
+        'publish_date',
+        'last_fetched_date',
+        {
+          key: 'gdrive_url',
+          label: 'GDrive Link',
+          formatter: (url) => {
+            return "<a target=\"_blank\" href=\"" + url + "\">Go</a>"
+          }
+        }
+      ],
       form: {
         slug: "",
         description: "",
@@ -120,21 +180,48 @@ export default {
         drive_folder_url: null,
         publish_date: null
       },
-      submitted: false
+      submitted: false,
+      currentPage: 1,
+      totalRows: 0
     };
   },
   methods: {
+    refreshTable: function() {
+      let idx = this.packageSets.findIndex((ps) => {
+        return ps.slug == this.packageSet
+      })
+      this.$refs.packagesTable[idx].refresh()
+    },
+    packageData: function(ctx) {
+      let promise = axios.get("/api/packages/" + this.packageSet)
+      return promise.then((res) => {
+          const items = res.data
+          this.currentPage = items.meta.current_page
+          this.totalRows = items.meta.total
+          console.log(items)
+          return items.data
+        })
+    },
     submitForm: function(evt) {
-      //evt.preventDefault();
-      // if(this.$refs.packageForm.$el.checkValidity() === false) {
-      //   this.$refs.packageForm.validated = true
-
-      // }
-      // this.$refs.packageForm.validated = true
       console.log(this.form)
-      let res = axios.post("/api/packages", this.form)
+      this.submitted = true;
+      let res = axios.post("/api/packages/" + this.packageSet, this.form)
         .then((res) => {
           console.log(res)
+          this.form = {
+            slug: "",
+            description: "",
+            drive_folder_url: "",
+            publish_date: ""
+          }
+          this.errs = {
+            slug: null,
+            description: null,
+            drive_folder_url: null,
+            publish_date: null
+          }
+          this.$refs.createModal.hide()
+          this.refreshTable()
         })
         .catch((err) => {
           console.log(err.response);

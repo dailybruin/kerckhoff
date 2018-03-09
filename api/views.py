@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-import boto3
 from urllib.parse import unquote
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotFound, \
@@ -11,6 +10,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .utils import get_aws_v4_signature, get_aws_v4_signing_key, get_s3direct_destinations
 from botocore.client import Config
+import boto3
 
 @login_required
 def get_random(request):

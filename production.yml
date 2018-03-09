@@ -1,0 +1,21 @@
+version: '2'
+services:
+  web:
+    image: dailybruin/kerckhoff
+    entrypoint: ./prod-entrypoint.sh
+    command: gunicorn -b 0.0.0.0:5000 -w 4 -k gthread --threads 2 kerckhoff.wsgi --log-file -
+    depends_on:
+      - db
+      - redis
+  db:
+    image: postgres:latest
+    volumes: 
+      - data:/var/lib/postgresql/
+    restart: always
+  redis:
+    image: redis:alpine
+    restart: always
+
+volumes:
+  data:
+    driver: rancher-nfs

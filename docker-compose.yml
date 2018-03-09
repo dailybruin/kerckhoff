@@ -13,14 +13,14 @@ services:
       - redis
     volumes:
       - .:/kerckhoff
-      - node_modules:/kerckhoff/node_modules
-  svc:
-    image: kerckhoff
-    command: npm run watch
-    restart: always
-    volumes:
-      - .:/kerckhoff
-      - node_modules:/kerckhoff/node_modules
+#      - node_modules:/kerckhoff/node_modules
+  # svc:
+  #   image: kerckhoff
+  #   command: npm run watch
+  #   restart: always
+  #   volumes:
+  #     - .:/kerckhoff
+  #     - node_modules:/kerckhoff/node_modules
   db:
     image: postgres:latest
     ports:

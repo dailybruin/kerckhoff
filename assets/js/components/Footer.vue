@@ -41,9 +41,19 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+
+body {
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 100px;
+}
+
 .footer {
-  margin-top: 5em;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100px;
 }
 
 </style>

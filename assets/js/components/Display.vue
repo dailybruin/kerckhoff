@@ -44,7 +44,7 @@ export default {
 
   created() {
     axios.get(`/pages?pagesPerQuery=50&queryNumber=1`).then(response => {
-      this.posts = response.data
+      this.pages = response.data
     })
   }
 }

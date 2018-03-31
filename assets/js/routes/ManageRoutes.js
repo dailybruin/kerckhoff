@@ -4,6 +4,7 @@ import UserProfile from "../components/UserProfile";
 import Manage from "../components/Manage";
 import ManageDisplay from "../components/management/ManageDisplay";
 import NewSite from "../components/management/NewSite";
+import NewSiteForm from "../components/management/NewSiteForm";
 import Packages from "../components/management/Packages";
 import PackageView from "../components/management/PackageView";
 
@@ -24,11 +25,11 @@ const routes = [
       },
       {
         path: "new",
-        component: NewSite
+        component: NewSiteForm
       },
       {
         path: "packages",
-        component: Packages,
+        component: Packages
       },
       {
         path: "packages/:slug",

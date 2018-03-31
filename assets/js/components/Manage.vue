@@ -9,7 +9,7 @@
     <div class="col col-md-2">
       <b-list-group>
         <b-list-group-item to="/manage/packages">Packages</b-list-group-item>
-        <b-list-group-item href="#" disabled>Static Sites</b-list-group-item>
+        <b-list-group-item to="/manage/new">Static Sites</b-list-group-item>
       </b-list-group>
     </div>
     <div class="col col-md-10">

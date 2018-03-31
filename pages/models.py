@@ -30,9 +30,9 @@ class Page(models.Model):
     )
     contributors = models.ManyToManyField(User)
     is_public = models.BooleanField(db_index=True)
-    public_publish_date = models.DateField(db_index=True, auto_now=True)
-    title = models.CharField(max_length=128)
-    series = models.ForeignKey('Series', on_delete=models.PROTECT, null=True)
+    public_publish_date = models.DateField(db_index=True, auto_now=True) #
+    title = models.CharField(max_length=128) #
+    series = models.ForeignKey('Series', on_delete=models.PROTECT, null=True) # dropdown
     last_modified_by = models.DateField(auto_now=True)
     created_on = models.DateField(auto_now_add=True)
 
@@ -58,7 +58,7 @@ class Page(models.Model):
             url_path += slug
         else:
             raise ValueError("Page type of '%s' is undefined!" % page_type)
-        
+
 
 class Release(models.Model):
     associated_page = models.ForeignKey(
@@ -72,4 +72,4 @@ class Release(models.Model):
         """
         This helper method returns the S3 prefix for this release
         """
-        return 
+        return

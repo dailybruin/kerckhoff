@@ -11,10 +11,20 @@
   <br />
   <h1>WIP: Page View</h1>
   <div>
-    <li v-for="page of pages">
-      <p>{{page.title}}</p>
-    </li>
+    <ul>
+      <li v-for="page of pages">
+        {{page.title}}
+      </li>
+    </ul>
   </div>
+  <!--
+  <div v-masonry transition-duration="0.3s" item-selector=".pageBlock" gutter="20">
+    <div v-masonry-tile class="pageBlock" v-for="page of pages">
+      <img src="https://biographyspy.com/wp-content/uploads/2017/11/Filthy-Frank-Age-Height-Wiki-Family-Net-Worth.jpeg" alt="God">
+      <p>{{page.title}}</p>
+    </div>
+  </div>
+  -->
 </div>
 </template>
 
@@ -28,11 +38,20 @@
   text-align: center;
 }
 
+/*
+.pageBlock {
+  margin-bottom:  0;
+}
+
+*/
+
 </style>
 
 
 <script>
 import {axios, utils} from "../util";
+//import {VueMasonryPlugin} from 'vue-masonry';
+//Vue.use(VueMasonryPlugin);
 
 export default {
   name: 'display-view',

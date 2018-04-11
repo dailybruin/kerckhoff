@@ -24,9 +24,9 @@ def pages(request):
     data = {}
     for page in currentQuery:
         eachPageData = {}
-        eachPageData["Title"] = page.title
-        eachPageData["Page Type"] = page.page_type
-        eachPageData["Public"] = page.is_public
+        eachPageData["title"] = page.title
+        eachPageData["page-type"] = page.page_type
+        eachPageData["public"] = page.is_public
         data[page.slug] = eachPageData;
 
     #converts data to JSON and returns
@@ -35,4 +35,3 @@ def pages(request):
 @require_http_methods(["POST"])
 def create_page(request):
     return
-    

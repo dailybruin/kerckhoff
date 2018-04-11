@@ -15,8 +15,12 @@ import utils from "./util";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
+//Vue Layout Import
+import { VueMasonryPlugin } from "vue-masonry";
+
 Vue.use(BootstrapVue);
 Vue.component("icon", Icon);
+Vue.use(VueMasonryPlugin);
 
 /* eslint-disable no-new */
 const app = new Vue({

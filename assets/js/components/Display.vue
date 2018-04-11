@@ -9,7 +9,7 @@
     <p>You can proceed on <a href="/manage">here</a>.</p>
   </div>
   <br />
-  <h1>WIP: Page View</h1>
+  <h1>WIP: Pages Masonry View</h1>
   <div>
     <ul>
       <li v-for="page of pages">
@@ -17,14 +17,14 @@
       </li>
     </ul>
   </div>
-  <!--
-  <div v-masonry transition-duration="0.3s" item-selector=".pageBlock" gutter="20">
+
+  <div v-masonry transition-duration="0.3s" item-selector=".pageBlock">
     <div v-masonry-tile class="pageBlock" v-for="page of pages">
-      <img src="https://biographyspy.com/wp-content/uploads/2017/11/Filthy-Frank-Age-Height-Wiki-Family-Net-Worth.jpeg" alt="God">
+      <!--img class="wip-bear" src="/static/img/wip_bear.png" /-->
       <p>{{page.title}}</p>
     </div>
   </div>
-  -->
+
 </div>
 </template>
 
@@ -49,9 +49,7 @@
 
 
 <script>
-import {axios, utils} from "../util";
-//import {VueMasonryPlugin} from 'vue-masonry';
-//Vue.use(VueMasonryPlugin);
+import {axios} from "../util";
 
 export default {
   name: 'display-view',

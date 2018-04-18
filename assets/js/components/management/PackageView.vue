@@ -28,6 +28,9 @@
           Loading...
         </h3>
         <div v-else>
+          <h5>Data</h5>
+          <pre><code>{{this.packageData.data}}</code></pre>
+
           <h5>Metadata</h5>
           <pre><code>{{fmMetaPretty}}</code></pre>
 
@@ -61,8 +64,6 @@ code {
 }
 
 </style>
-
-
 
 <script>
 import {axios, utils} from "../../util";

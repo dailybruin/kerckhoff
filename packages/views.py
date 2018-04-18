@@ -72,5 +72,4 @@ def push_to_live(request, pset_slug, id):
     res = package.push_to_live()
     if res:
         return HttpResponse(status=200)
-    else:
-        return HttpResponse(status=400)
+    return HttpResponse(status=400)

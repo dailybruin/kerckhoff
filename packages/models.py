@@ -43,7 +43,7 @@ class PackageSet(models.Model):
         print("Starting populate for %s" % self.slug)
         google = get_oauth2_session(user)
         # we don't care about the aml_data dict here
-        _, _, folders = list_folder(google, self)
+        _, _, folders, _ = list_folder(google, self)
         instances = []
         for folder in folders:
             try:

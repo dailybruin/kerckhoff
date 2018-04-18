@@ -16,6 +16,7 @@ import pathlib
 import imghdr
 import CloudFlare
 import re
+import requests
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
@@ -114,6 +115,10 @@ class Package(models.Model):
         self.save()
         return self
 
+    def push_to_live(self):
+        res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
+        return res.ok
+
     # TODO - put this in a workqueue
     def fetch_from_gdrive(self, user):
         self.processing = True
@@ -200,9 +205,9 @@ def transfer_to_s3(session, package):
                     "hash": image_hash,
                     "s3_fields": response
                 }
-    
+
     return package
-        
+
 
 
 def add_to_repo_folder(session, package):
@@ -224,7 +229,7 @@ def get_file(session, file_id, download=False):
 def list_folder(session, package):
     text = "### No article document was found in this package!\n"
     images = []
-    
+
     payload = {
         "q": "'%s' in parents" % package.drive_folder_id,
         "maxResults": 1000
@@ -244,7 +249,7 @@ def list_folder(session, package):
         if article[0]['mimeType'] != "application/vnd.google-apps.document":
             req = get_file(session, article[0]['id'], download=True)
             text = req.content.decode('utf-8')
-        else:     
+        else:
             data = session.get(PREFIX + "/v2/files/" + article[0]['id'] + "/export", params={"mimeType": "text/plain"})
             text = data.content.decode('utf-8')
         # fix indentation for yaml
@@ -272,14 +277,14 @@ def create_package(session, package, existing=False):
     session.post(PREFIX + "/v2/files", json=file_payload)
 
     return (folder_resource['alternateLink'], folder_resource['id'])
-    
+
 
 # https://github.com/pennersr/django-allauth/issues/420
 def get_oauth2_session(user):
     """ Create OAuth2 session which autoupdates the access token if it has expired """
 
     refresh_token_url = "https://accounts.google.com/o/oauth2/token"
-    
+
     social_token = SocialToken.objects.get(account__user=user, account__provider='google')
 
     def token_updater(token):
@@ -304,5 +309,5 @@ def get_oauth2_session(user):
         'expires_in': expires_in  # Important otherwise the token update doesn't get triggered.
     }
 
-    return OAuth2Session(client_id, token=token, auto_refresh_kwargs=extra, 
+    return OAuth2Session(client_id, token=token, auto_refresh_kwargs=extra,
                          auto_refresh_url=refresh_token_url, token_updater=token_updater)

@@ -65,3 +65,12 @@ def update_package(request, pset_slug, id):
     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
     res = package.fetch_from_gdrive(request.user)
     return JsonResponse(model_to_dict(res))
+
+@require_POST
+def push_to_live(request, pset_slug, id):
+    package = Package.objects.get(package_set__slug=pset_slug, slug=id)
+    res = package.push_to_live()
+    if res:
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=400)

@@ -246,16 +246,16 @@ def list_folder(session, package):
     aml_data = {}
 
     # adds title of article as key, and parsed data as value. Saves info to aml_data
-    i = 0
-    for i in range(len(data_files)):
-        if data_files[i]['mimeType'] != "application/vnd.google-apps.document":
-            req = get_file(session, data_files[i]['id'], download=True)
+
+    for aml in data_files:
+        if aml['mimeType'] != "application/vnd.google-apps.document":
+            req = get_file(session, aml['id'], download=True)
             text = req.content.decode('utf-8')
         else:
-            data = session.get(PREFIX + "/v2/files/" + data_files[i]['id'] + "/export", params={"mimeType": "text/plain"})
+            data = session.get(PREFIX + "/v2/files/" + aml['id'] + "/export", params={"mimeType": "text/plain"})
             text = data.content.decode('utf-8')
         #print("IN ARCHIEML ")
-        aml_data[data_files[i]['title']] = archieml.loads(text)
+        aml_data[aml['title']] = archieml.loads(text)
 
     # only taking the first one - assuming there's only one article file
     if len(article) >= 1:

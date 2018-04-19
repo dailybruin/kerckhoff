@@ -4,16 +4,30 @@
       <div class="col">
       <h2>
         {{ packageData.slug || $route.params.slug }}
-        <b-button class="ml-2" size="sm" variant="secondary" :disabled="isReallyFetching" @click="fetchGdrive">
+        <b-button class="ml-2" size="sm" variant="secondary" :disabled="isReallyFetching || isPublishing" @click="fetchGdrive">
           <span v-if="isReallyFetching">
             Fetching...
+          </span>
+          <span v-else-if="isPublishing">
+            Publishing...
           </span>
           <span v-else>
             Update from GDrive
           </span>
         </b-button>
+        <b-button class="ml-2" size="sm" variant="danger" :disabled="isReallyFetching || isPublishing" @click="publishToNode">
+          <span v-if="isReallyFetching">
+            Fetching...
+          </span>
+          <span v-else-if="isPublishing">
+            Publishing...
+          </span>
+          <span v-else>
+            Publish
+          </span>
+        </b-button>
       </h2>
-    </div>
+      </div>
     </div>
     <div class="col">
     <div class="row">
@@ -96,6 +110,7 @@ export default {
     return {
       packageData: {},
       isFetching: false,
+      isPublishing: false,
       isLoading: true,
     }
   },
@@ -117,6 +132,14 @@ export default {
           console.log(res.data);
           this.packageData = res.data;
         })
+    },
+    publishToNode: function() {
+      this.isPublishing = true;
+      axios.post("/api/packages/" + this.$route.params.pset + "/" + this.$route.params.slug + "/push")
+        .catch((error) => {
+          alert("Publishing Failed!");
+        });
+      this.isPublishing = false;
     },
   }
 }

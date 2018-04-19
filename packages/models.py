@@ -16,6 +16,7 @@ import pathlib
 import imghdr
 import CloudFlare
 import re
+import requests
 import archieml
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
@@ -118,6 +119,10 @@ class Package(models.Model):
         self.save()
         return self
 
+    def push_to_live(self):
+        res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
+        return res.ok
+
     # TODO - put this in a workqueue
     def fetch_from_gdrive(self, user):
         self.processing = True
@@ -205,8 +210,8 @@ def transfer_to_s3(session, package):
                     "hash": image_hash,
                     "s3_fields": response
                 }
-
     return package
+
 
 def add_to_repo_folder(session, package):
     payload = {

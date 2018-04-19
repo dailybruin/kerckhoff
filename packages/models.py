@@ -17,6 +17,7 @@ import imghdr
 import CloudFlare
 import re
 import requests
+import archieml
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
@@ -42,7 +43,8 @@ class PackageSet(models.Model):
     def populate(self, user):
         print("Starting populate for %s" % self.slug)
         google = get_oauth2_session(user)
-        _, _, folders = list_folder(google, self)
+        # we don't care about the aml_data dict here
+        _, _, folders, _ = list_folder(google, self)
         instances = []
         for folder in folders:
             try:
@@ -72,6 +74,7 @@ class Package(models.Model):
     drive_folder_url = models.URLField()
     metadata = JSONField(blank=True, default=dict, null=True)
     images = JSONField(blank=True, default=dict, null=True)
+    data = JSONField(blank=True, default=dict, null=True)
     processing = models.BooleanField(default=False)
     cached_article_preview = models.TextField(blank=True)
     publish_date = models.DateField()
@@ -90,6 +93,7 @@ class Package(models.Model):
             "description": self.description,
             "gdrive_url": self.drive_folder_url,
             "images": self.images,
+            "data": self.data,
             "article": self.cached_article_preview,
             "publish_date": self.publish_date,
             "last_fetched_date": self.last_fetched_date
@@ -125,11 +129,12 @@ class Package(models.Model):
         self.save()
         try:
             google = get_oauth2_session(user)
-            text, images, _ = list_folder(google, self)
+            text, images, _, aml_data = list_folder(google, self)
             self.cached_article_preview = text
             if self.images is None:
                 self.images = {}
             self.images["gdrive"] = images
+            self.data = aml_data
             transfer_to_s3(google, self)
             self.cached_article_preview = rewrite_image_url(self)
             self.last_fetched_date = timezone.now()
@@ -205,9 +210,7 @@ def transfer_to_s3(session, package):
                     "hash": image_hash,
                     "s3_fields": response
                 }
-
     return package
-
 
 
 def add_to_repo_folder(session, package):
@@ -238,11 +241,26 @@ def list_folder(session, package):
     res = session.get(PREFIX + "/v2/files", params=payload)
     items = res.json()['items']
     article = list(filter(lambda f: "article" in f['title'], items))
+    data_files = list(filter(lambda f: ".aml" in f['title'], items))
     images = list(filter(img_check, items))
     folders = list(filter(lambda f: f["mimeType"] == "application/vnd.google-apps.folder", items))
     #print("RES:")
     #print(article)
     #print(images)
+
+    aml_data = {}
+
+    # adds title of article as key, and parsed data as value. Saves info to aml_data
+
+    for aml in data_files:
+        if aml['mimeType'] != "application/vnd.google-apps.document":
+            req = get_file(session, aml['id'], download=True)
+            text = req.content.decode('utf-8')
+        else:
+            data = session.get(PREFIX + "/v2/files/" + aml['id'] + "/export", params={"mimeType": "text/plain"})
+            text = data.content.decode('utf-8')
+        #print("IN ARCHIEML ")
+        aml_data[aml['title']] = archieml.loads(text)
 
     # only taking the first one - assuming there's only one article file
     if len(article) >= 1:
@@ -255,7 +273,9 @@ def list_folder(session, package):
         # fix indentation for yaml
         text = text.replace("\t", "  ")
     # this will take REALLY long.
-    return text, images, folders
+
+    # return everything
+    return text, images, folders, aml_data
 
 def create_package(session, package, existing=False):
     payload = {

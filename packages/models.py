@@ -67,6 +67,12 @@ class PackageSet(models.Model):
                 print("%s failed with error: %s" % (instance.slug, e))
                 continue
 
+# Snapshot of a Package instance at a particular time
+class PackageVersion(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    article_data = models.TextField(blank=True)
+    data = models.JSONField(blank=True, default=dict, null=True)
+    
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
     description = models.TextField(blank=True)
@@ -80,6 +86,17 @@ class Package(models.Model):
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
+    
+    # Versioning
+    latest_version = models.ForeignKey(null=True)
+
+
+    # For versioning feature
+    def create_version(self):
+        pv = PackageVersion(package=self.slug, article_data=self.cached_article_preview, data=self.data)
+        latest_version = pv.id()
+        pv.save()
+        
 
     def as_endpoints(self):
         return {
@@ -121,6 +138,10 @@ class Package(models.Model):
 
     def push_to_live(self):
         res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
+        
+        # Versioning
+        self.create_version()
+
         return res.ok
 
     # TODO - put this in a workqueue

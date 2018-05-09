@@ -66,12 +66,6 @@ class PackageSet(models.Model):
             except Exception as e:
                 print("%s failed with error: %s" % (instance.slug, e))
                 continue
-
-# Snapshot of a Package instance at a particular time
-class PackageVersion(models.Model):
-    package = models.ForeignKey(Package, on_delete=models.PROTECT)
-    article_data = models.TextField(blank=True)
-    data = models.JSONField(blank=True, default=dict, null=True)
     
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
@@ -88,15 +82,16 @@ class Package(models.Model):
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     
     # Versioning
-    latest_version = models.ForeignKey(null=True)
+    latest_version = models.CharField(max_length=64, null=True)
 
 
     # For versioning feature
     def create_version(self):
-        pv = PackageVersion(package=self.slug, article_data=self.cached_article_preview, data=self.data)
-        latest_version = pv.id()
+        pv = PackageVersion(slug=self.slug, article_data=self.cached_article_preview, data=self.data)
         pv.save()
-        
+        self.latest_version = pv.slug
+        # return 'Successfully created PackageVersion object!'
+
 
     def as_endpoints(self):
         return {
@@ -166,6 +161,12 @@ class Package(models.Model):
             self.save()
 
         return self
+
+# Snapshot of a Package instance at a particular time
+class PackageVersion(models.Model):
+    slug = models.CharField(max_length=64, null=True)
+    article_data = models.TextField(blank=True)
+    data = JSONField(blank=True, default=dict, null=True)
 
 def rewrite_image_url(package):
     def replace_url(fn):

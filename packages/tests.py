@@ -21,8 +21,9 @@ class PackageVersionTestCase(TestCase):
 
         # Check handling of multiple PackageVersions 
         packageA.cached_article_preview = "HONG YEET"
-        packageA.create_version() # Now we should have 2 different versions of packageA
+        packageA.create_version() # Now we should have 2 different versions of packageA (slug = "a")
         myPV = PackageVersion.objects.last()
-        self.assertEqual(len(PackageVersion.objects.all()), 2)
+        self.assertEqual(len(PackageVersion.objects.filter(slug="a").all()), 2)
+        self.assertEqual(len(PackageVersion.objects.filter(slug="b").all()), 0)
         self.assertEqual(myPV.article_data, "HONG YEET")
 

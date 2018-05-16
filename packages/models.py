@@ -168,8 +168,9 @@ def transfer_to_s3(session, package):
         package.images["s3"] = {}
 
     for idx, image in enumerate(package.images["gdrive"]):
-        req = get_file(session, image["id"], download=True)
-        max_size = (1024, 1024)
+        if image.last_fetched_date < package.last_fetched_date
+            req = get_file(session, image["id"], download=True)
+            max_size = (1024, 1024)
 
         with tempfile.SpooledTemporaryFile(mode="w+b") as tf:
             print(image["title"] + " | Processing image %d ..." % idx)

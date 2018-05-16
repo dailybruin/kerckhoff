@@ -82,14 +82,14 @@ class Package(models.Model):
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     
     # Versioning
-    latest_version = models.CharField(max_length=64, null=True)
+    latest_version = models.ForeignKey('self', related_name='versions', on_delete=models.CASCADE, null=True)
 
 
-    # For versioning feature
-    def create_version(self):
-        pv = PackageVersion(slug=self.slug, article_data=self.cached_article_preview, data=self.data)
+    # For versioning feature, accepts string change_summary as argument
+    def create_version(self, change_summary):
+        pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, version_description=change_summary)
         pv.save()
-        self.latest_version = pv.slug
+        self.latest_version = pv.package
         # return 'Successfully created PackageVersion object!'
 
 
@@ -164,7 +164,8 @@ class Package(models.Model):
 
 # Snapshot of a Package instance at a particular time
 class PackageVersion(models.Model):
-    slug = models.CharField(max_length=64, null=True)
+    package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True)
+    version_description = models.TextField(blank=True)
     article_data = models.TextField(blank=True)
     data = JSONField(blank=True, default=dict, null=True)
 

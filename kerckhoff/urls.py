@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^accounts/', include('user_profile.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^api/', include('api.urls')),
+    url(r'^api/tags/', include('tags.urls')),
     url(r'^api/packages/', include('packages.urls')),
     url(r'', include('pages.urls')),
 ]

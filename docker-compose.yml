@@ -13,14 +13,6 @@ services:
       - redis
     volumes:
       - .:/kerckhoff
-#      - node_modules:/kerckhoff/node_modules
-  # svc:
-  #   image: kerckhoff
-  #   command: npm run watch
-  #   restart: always
-  #   volumes:
-  #     - .:/kerckhoff
-  #     - node_modules:/kerckhoff/node_modules
   db:
     image: postgres:latest
     ports:
@@ -29,6 +21,8 @@ services:
     image: redis:alpine
     ports:
       - "6379:6379"
+  es:
+    image: elasticsearch:alpine
 
 volumes:
   node_modules:

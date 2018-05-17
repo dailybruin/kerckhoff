@@ -185,6 +185,8 @@ WEBPACK_LOADER = {
     }
 }
 
+# Elasticsearch
+ES_HOST = env('ES_HOST', default="es")
 
 # CORS
 

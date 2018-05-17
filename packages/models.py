@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
+from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialToken
 from requests_oauthlib import OAuth2Session
 from django.utils import timezone
@@ -86,8 +87,8 @@ class Package(models.Model):
 
 
     # For versioning feature, accepts string arguments name(of creater) and change_summary
-    def create_version(self, name, change_summary):
-        pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=name, version_description=change_summary)
+    def create_version(self, user, change_summary):
+        pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=user, version_description=change_summary)
         pv.save()
         self.latest_version = pv.package
         # return 'Successfully created PackageVersion object!'
@@ -135,7 +136,7 @@ class Package(models.Model):
         res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
         
         # Versioning
-        self.create_version()
+        # self.create_version()
 
         return res.ok
 
@@ -165,9 +166,9 @@ class Package(models.Model):
 # Snapshot of a Package instance at a particular time
 class PackageVersion(models.Model):
     package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     version_description = models.TextField(blank=True)
     article_data = models.TextField(blank=True)
-    creator = models.TextField(blank=True)
     data = JSONField(blank=True, default=dict, null=True)
     
 

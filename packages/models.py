@@ -82,7 +82,7 @@ class Package(models.Model):
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     
     # Versioning
-    latest_version = models.ForeignKey('self', related_name='versions', on_delete=models.CASCADE, null=True, blank=True)
+    latest_version = models.ForeignKey('self', related_name='versions', on_delete=models.CASCADE, null=True)
 
 
     # For versioning feature, accepts string arguments name(of creater) and change_summary

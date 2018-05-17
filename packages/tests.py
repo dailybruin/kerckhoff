@@ -30,3 +30,4 @@ class PackageVersionTestCase(TestCase):
         # Check if able to retrieve publish_date of latest PackageVersion
         getLatest = packageA.latest_version
         self.assertEqual(getLatest.publish_date, packageA.publish_date)
+        

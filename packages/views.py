@@ -6,7 +6,12 @@ from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
+from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl.search import Response
 import json
+from search.indexes import PackageIndex
+from kerckhoff.exceptions import UserError
+from kerckhoff import es
 from .models import Package, PackageSet
 from .forms import PackageForm
 
@@ -85,3 +90,37 @@ def push_to_live(request, pset_slug, id):
     if res:
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
+@require_GET
+def search(request: HttpRequest, pset_slug: str) -> JsonResponse:
+    # TODO: we may need to distinguish internal vs external search queries at some point
+    query_term = request.GET.get("q", "")
+    page = 1
+    items_per_page = 20
+
+    try:
+        page = int(request.GET.get("page", 1))
+        items_per_page = int(request.GET.get("items", 20))
+    except ValueError as ex:
+        raise UserError(ex.error_message)
+
+    start = (page-1)*items_per_page
+    end = (page)*items_per_page
+
+    q = Q({
+        'multi_match': {
+            "query": query_term,
+            "fields": ["article_text", "description"]
+        }
+    })
+
+    s = Search(using=es, index=PackageIndex().meta.index) \
+        .filter('term', package_set=pset_slug) \
+        .query(q)[start:end]
+    
+    response : Response = s.execute()
+
+    return JsonResponse({
+        "meta": {},
+        "data": response.to_dict()
+    })

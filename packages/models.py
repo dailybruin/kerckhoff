@@ -235,6 +235,7 @@ def add_to_repo_folder(session, package):
 
 def get_file(session, file_id, download=False):
     res = session.get(PREFIX + "/v2/files/" + file_id + ("?alt=media" if download else ""), stream=download)
+    print(res.request.headers.items())
     res.raise_for_status()
     if download:
         # Returns the requests object

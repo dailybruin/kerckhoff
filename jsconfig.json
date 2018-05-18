@@ -1,5 +1,9 @@
 {
     "include": [
       "./assets/**/*"
+    ],
+    "exclude": [
+      "node_modules",
+      "./assets/bundles/**/*"
     ]
   }

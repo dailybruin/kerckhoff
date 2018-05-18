@@ -23,6 +23,10 @@ services:
       - "6379:6379"
   es:
     image: blacktop/elasticsearch
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
 
 volumes:
-  node_modules:
+  es_data:

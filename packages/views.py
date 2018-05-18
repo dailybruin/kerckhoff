@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.search import Response
 import json
+import math
 from search.indexes import PackageIndex
 from kerckhoff.exceptions import UserError
 from kerckhoff import es
@@ -118,9 +119,13 @@ def search(request: HttpRequest, pset_slug: str) -> JsonResponse:
         .filter('term', package_set=pset_slug) \
         .query(q)[start:end]
     
-    response : Response = s.execute()
+    response : Response = s.execute().to_dict()
 
     return JsonResponse({
-        "meta": {},
-        "data": response.to_dict()
+        "meta": {
+            "total": response['hits']['total'],
+            "current_page": page,
+            "num_pages": math.ceil(response['hits']['total']/(items_per_page + 0.0))
+        },
+        "data": response['hits']['hits']
     })

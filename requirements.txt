@@ -1,5 +1,5 @@
 archieml==0.3.4
-astroid==1.5.3
+astroid==1.6.4
 backports.functools-lru-cache==1.4
 boto3==1.4.5
 botocore==1.5.92

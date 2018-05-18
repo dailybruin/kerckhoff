@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialToken
 from requests_oauthlib import OAuth2Session
 from django.utils import timezone
@@ -66,7 +67,7 @@ class PackageSet(models.Model):
             except Exception as e:
                 print("%s failed with error: %s" % (instance.slug, e))
                 continue
-
+    
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
     description = models.TextField(blank=True)
@@ -80,6 +81,18 @@ class Package(models.Model):
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
+    
+    # Versioning
+    latest_version = models.ForeignKey('PackageVersion', related_name='versions', on_delete=models.CASCADE, null=True)
+
+
+    # For versioning feature, accepts string arguments name(of creater) and change_summary
+    def create_version(self, user, change_summary):
+        pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=user, version_description=change_summary)
+        pv.save()
+        self.latest_version = pv
+        # return 'Successfully created PackageVersion object!'
+
 
     def indexing(self):
         """
@@ -141,6 +154,10 @@ class Package(models.Model):
 
     def push_to_live(self):
         res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
+        
+        # Versioning
+        # self.create_version()
+
         return res.ok
 
     # TODO - put this in a workqueue
@@ -165,6 +182,15 @@ class Package(models.Model):
             self.save()
 
         return self
+
+# Snapshot of a Package instance at a particular time
+class PackageVersion(models.Model):
+    package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    version_description = models.TextField(blank=True)
+    article_data = models.TextField(blank=True)
+    data = JSONField(blank=True, default=dict, null=True)
+    
 
 def rewrite_image_url(package):
     def replace_url(fn):

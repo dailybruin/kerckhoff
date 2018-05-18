@@ -48,7 +48,7 @@ requests-oauthlib==0.8.0
 rsa==3.4.2
 s3transfer==0.1.13
 singledispatch==3.4.0.3
-six==1.10.0
+six==1.11.0
 uritemplate==3.0.0
 urllib3==1.22
 whitenoise==3.3.1

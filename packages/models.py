@@ -18,6 +18,7 @@ import CloudFlare
 import re
 import requests
 import archieml
+import enum
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
@@ -145,6 +146,18 @@ class Package(models.Model):
             self.save()
 
         return self
+
+class Events(enum.Enum): 
+    INIT = 'init'
+    OK = 'ack'
+    ERR = 'err'
+    REFRESH = 'ref'
+    UPDATE = 'upd'
+
+class PackageStates(enum.Enum):
+    UNINITIALIZED = 'UI'
+    LISTENING = 'LI'
+    INVALID = 'IN'
 
 def rewrite_image_url(package):
     def replace_url(fn):

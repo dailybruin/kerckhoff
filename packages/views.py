@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.core import serializers
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from django.core.paginator import Paginator
@@ -11,7 +11,19 @@ from .models import Package, PackageSet
 from .forms import PackageForm
 
 @require_http_methods(['GET', 'POST'])
-def list_or_create(request, pset_slug):
+def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
+    """
+    GET: List the packages for a particular PackageSet
+    POST: Create a new package within the specified PackageSet
+    
+    Arguments:
+        request {HttpRequest} -- the request
+        pset_slug {str} -- the package slug ID
+    
+    Returns:
+        JsonResponse -- a JSON of the results
+    """
+
     if request.method == 'GET':
         # List objects
         page_num = request.GET.get("page", 1)

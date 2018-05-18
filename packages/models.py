@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField, ArrayField
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from allauth.socialaccount.models import SocialToken
 from requests_oauthlib import OAuth2Session
 from django.utils import timezone
 from datetime import timedelta
-from django.conf import settings
-from django.core.exceptions import ValidationError
 from PIL import Image
 import tempfile
 import boto3
@@ -14,15 +14,15 @@ from botocore.client import Config
 import boto3
 import pathlib
 import imghdr
-import CloudFlare
 import re
 import requests
 import archieml
 
+from search.indexes import PackageIndex
+
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
 PREFIX = "https://www.googleapis.com/drive"
-cf = CloudFlare.CloudFlare()
 IMAGE_REGEX = re.compile(r"!\[[^\]]+\]\(([^)]+)\)")
 
 class PackageSet(models.Model):
@@ -80,6 +80,26 @@ class Package(models.Model):
     publish_date = models.DateField()
     last_fetched_date = models.DateField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
+
+    def indexing(self):
+        """
+        Adds to the elasticsearch index the current package instance
+        """
+        idx = PackageIndex(
+            meta={'id': self.slug},
+            slug=self.slug,
+            package_set=self.package_set.slug,
+            description=self.description,
+            cached_article_preview=self.cached_article_preview,
+            article_text=self.cached_article_preview, # TODO: Change when article versioning is completed
+            publish_date=self.publish_date
+        )
+        idx.save()
+        return idx.to_dict(include_meta=True)
+
+    def save(self, *args, **kwargs):
+        self.indexing()
+        super().save(*args, **kwargs)
 
     def as_endpoints(self):
         return {
@@ -156,13 +176,6 @@ def rewrite_image_url(package):
     text = IMAGE_REGEX.sub(replace_url,package.cached_article_preview)
     return text
 
-def img_check(item):
-    valid_extensions = [".jpeg", ".png", ".jpg", ".gif", ".webp"]
-    for ext in valid_extensions:
-        if ext in item['title']:
-            return True
-    return False
-
 def transfer_to_s3(session, package):
     if package.images.get("s3") is None:
         package.images["s3"] = {}
@@ -238,6 +251,14 @@ def list_folder(session, package):
         "maxResults": 1000
     }
     # we assume there's always less than 100 files in a package. change this if assumption untrue
+
+    def img_check(item: dict):
+        valid_extensions = [".jpeg", ".png", ".jpg", ".gif", ".webp"]
+        for ext in valid_extensions:
+            if ext in item["title"].lower():
+                return True
+        return False
+
     res = session.get(PREFIX + "/v2/files", params=payload)
     items = res.json()['items']
     article = list(filter(lambda f: "article" in f['title'], items))
@@ -300,7 +321,7 @@ def create_package(session, package, existing=False):
 
 
 # https://github.com/pennersr/django-allauth/issues/420
-def get_oauth2_session(user):
+def get_oauth2_session(user) -> OAuth2Session:
     """ Create OAuth2 session which autoupdates the access token if it has expired """
 
     refresh_token_url = "https://accounts.google.com/o/oauth2/token"

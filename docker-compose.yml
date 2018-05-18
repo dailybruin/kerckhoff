@@ -22,7 +22,7 @@ services:
     ports:
       - "6379:6379"
   es:
-    image: elasticsearch:alpine
+    image: blacktop/elasticsearch
 
 volumes:
   node_modules:

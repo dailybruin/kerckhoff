@@ -18,7 +18,7 @@ class PackageVersionTestCase(TestCase):
         self.assertEqual(myPV.article_data, "Hong Yi")
         self.assertEqual(myPV.version_description, "This version uses Hong Yi")
         self.assertEqual(myPV.creator.get_username(), "kimjongun")     
-        self.assertEqual(packageA.latest_version, myPV.package)
+        self.assertEqual(packageA.latest_version, myPV)
         
         
         # Check handling of multiple PackageVersions 
@@ -31,6 +31,6 @@ class PackageVersionTestCase(TestCase):
         self.assertEqual(myPV.creator.get_username(), "kimjongun")     
 
         # Check if able to retrieve publish_date of latest PackageVersion
-        getLatest = packageA.latest_version
-        self.assertEqual(getLatest.publish_date, packageA.publish_date)
+        latestPV = packageA.latest_version
+        self.assertEqual(latestPV.article_data, "HONG YEET")
         

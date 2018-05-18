@@ -83,14 +83,14 @@ class Package(models.Model):
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     
     # Versioning
-    latest_version = models.ForeignKey('self', related_name='versions', on_delete=models.CASCADE, null=True)
+    latest_version = models.ForeignKey('PackageVersion', related_name='versions', on_delete=models.CASCADE, null=True)
 
 
     # For versioning feature, accepts string arguments name(of creater) and change_summary
     def create_version(self, user, change_summary):
         pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=user, version_description=change_summary)
         pv.save()
-        self.latest_version = pv.package
+        self.latest_version = pv
         # return 'Successfully created PackageVersion object!'
 
 

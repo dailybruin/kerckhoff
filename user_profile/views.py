@@ -17,7 +17,7 @@ def profile(request):
 
 #the view to redirect to the Google login page
 def redirectToGoogle(request):
-    coming_from = request.GET['next']
+    coming_from = request.GET.get("next", "/manage")
     url_params = {
         "process": "login",
         "next": coming_from

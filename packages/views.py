@@ -1,17 +1,35 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpRequest
 from django.core import serializers
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
+from elasticsearch_dsl import Search, Q
+from elasticsearch_dsl.search import Response
 import json
+import math
+from search.indexes import PackageIndex
+from kerckhoff.exceptions import UserError
+from kerckhoff import es
 from .models import Package, PackageSet
 from .forms import PackageForm
 
 @require_http_methods(['GET', 'POST'])
-def list_or_create(request, pset_slug):
+def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
+    """
+    GET: List the packages for a particular PackageSet
+    POST: Create a new package within the specified PackageSet
+    
+    Arguments:
+        request {HttpRequest} -- the request
+        pset_slug {str} -- the package slug ID
+    
+    Returns:
+        JsonResponse -- a JSON of the results
+    """
+
     if request.method == 'GET':
         # List objects
         page_num = request.GET.get("page", 1)
@@ -73,3 +91,41 @@ def push_to_live(request, pset_slug, id):
     if res:
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
+@require_GET
+def search(request: HttpRequest, pset_slug: str) -> JsonResponse:
+    # TODO: we may need to distinguish internal vs external search queries at some point
+    query_term = request.GET.get("q", "")
+    page = 1
+    items_per_page = 20
+
+    try:
+        page = int(request.GET.get("page", 1))
+        items_per_page = int(request.GET.get("items", 20))
+    except ValueError as ex:
+        raise UserError(ex.error_message)
+
+    start = (page-1)*items_per_page
+    end = (page)*items_per_page
+
+    q = Q({
+        'multi_match': {
+            "query": query_term,
+            "fields": ["article_text", "description"]
+        }
+    })
+
+    s = Search(using=es, index=PackageIndex().meta.index) \
+        .filter('term', package_set=pset_slug) \
+        .query(q)[start:end]
+    
+    response : Response = s.execute().to_dict()
+
+    return JsonResponse({
+        "meta": {
+            "total": response['hits']['total'],
+            "current_page": page,
+            "num_pages": math.ceil(response['hits']['total']/(items_per_page + 0.0))
+        },
+        "data": response['hits']['hits']
+    })

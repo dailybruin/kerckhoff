@@ -24,6 +24,11 @@
             {{data.value}}
           </b-link>
         </template>
+        <template slot="gdrive_url" slot-scope="data">
+          <a :href="data.value" target="_blank">
+            Google Drive Folder
+          </a>
+        </template>
       </b-table>
       <b-pagination :total-rows="totalRows" v-model="currentPage" :per-page="30"></b-pagination>
     </b-tab>
@@ -160,13 +165,7 @@ export default {
         'description',
         'publish_date',
         'last_fetched_date',
-        {
-          key: 'gdrive_url',
-          label: 'GDrive Link',
-          formatter: (url) => {
-            return "<a target=\"_blank\" href=\"" + url + "\">Go</a>"
-          }
-        }
+        'gdrive_url'
       ],
       form: {
         slug: "",

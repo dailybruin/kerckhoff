@@ -5,6 +5,7 @@ services:
     build: .
     image: kerckhoff
     command: python3 manage.py runserver 0.0.0.0:5000
+    entrypoint: ./dev-entrypoint.sh
     ports:
       - "5000:5000"
     env_file: .env

@@ -17,3 +17,6 @@ ADD package.json package-lock.json /kerckhoff/
 RUN npm install
 ADD . /kerckhoff/
 EXPOSE 5000
+
+ENTRYPOINT [ "./prod-entrypoint.sh" ]
+CMD "./prod.sh"

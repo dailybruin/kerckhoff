@@ -10,3 +10,6 @@ Dockerfile
 .eslintrc
 .editorconfig
 .gitlab-ci.yml
+
+assets/bundles/
+static/

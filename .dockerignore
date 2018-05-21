@@ -11,5 +11,14 @@ Dockerfile
 .editorconfig
 .gitlab-ci.yml
 
-assets/bundles/
+kerckhoff/assets/bundles/
 static/
+
+stats.json
+webpack-stats.json
+npm-debug.log
+
+*/**/__pycache__/
+v8-compile-cache*
+
+.mypy_cache

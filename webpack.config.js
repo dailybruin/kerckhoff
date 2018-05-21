@@ -8,12 +8,12 @@ module.exports = {
   mode: process.env.DEBUG == "True" ? "development" : "production",
 
   entry: {
-    main: "./assets/js/main",
-    management: "./assets/js/management"
+    main: "./kerckhoff/assets/js/main",
+    management: "./kerckhoff/assets/js/management"
   },
 
   output: {
-    path: path.resolve("./assets/bundles/"),
+    path: path.resolve("./kerckhoff/assets/bundles/"),
     filename: "[name]-[hash].js"
   },
 

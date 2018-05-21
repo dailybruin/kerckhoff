@@ -101,8 +101,7 @@ ENV/
 node_modules/
 webpack-stats.json
 
-assets/bundles/
-.vscode
+kerckhoff/assets/bundles/**/*
 
 # General
 *.DS_Store
@@ -112,6 +111,6 @@ assets/bundles/
 
 stats.json
 
-static/
+kerckhoff/static/**/*
 
 v8-compile-cache*/**/*

@@ -1,8 +1,8 @@
 archieml==0.3.4
 astroid==1.6.4
 backports.functools-lru-cache==1.5
-boto3==1.7.23
-botocore==1.10.23
+boto3==1.7.24
+botocore==1.10.24
 certifi==2018.4.16
 chardet==3.0.4
 cloudflare==2.1.0

@@ -1,6 +1,5 @@
 {
-    "python.pythonPath": "/Users/hongee/Envs/kerckhoff-C7DUdSyH/bin/python",
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": false,
-    "python.linting.mypyEnabled": false
+    "python.linting.mypyEnabled": true
 }

@@ -6,8 +6,10 @@ from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.core.paginator import Paginator
 from django.core.exceptions import ValidationError
+from django.contrib.auth.decorators import login_required
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.search import Response
+from kerckhoff.util.decorators import api_login_required 
 import json
 import math
 from search.indexes import PackageIndex
@@ -17,6 +19,7 @@ from .models import Package, PackageSet
 from .forms import PackageForm
 
 @require_http_methods(['GET', 'POST'])
+@api_login_required()
 def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
     """
     GET: List the packages for a particular PackageSet
@@ -33,7 +36,7 @@ def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
     if request.method == 'GET':
         # List objects
         page_num = request.GET.get("page", 1)
-        packages = Package.objects.filter(package_set__slug=pset_slug).all()
+        packages = Package.objects.filter(package_set__slug=pset_slug).order_by('publish_date').all()
         paginator = Paginator(packages, 30)
         page = paginator.get_page(page_num)
         meta = {
@@ -77,15 +80,16 @@ def show_one(request, pset_slug, id):
     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
     return JsonResponse(model_to_dict(package))
 
-
 @require_POST
+@api_login_required()
 def update_package(request, pset_slug, id):
     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
     res = package.fetch_from_gdrive(request.user)
     return JsonResponse(model_to_dict(res))
 
 @require_POST
-def push_to_live(request, pset_slug, id):
+@api_login_required()
+def push_to_live(request: HttpRequest, pset_slug: str, id: str):
     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
     res = package.push_to_live()
     if res:

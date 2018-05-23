@@ -28,7 +28,7 @@
           <a href="#">Bruinwalk</a>
         </div>
         <div class="col">
-          <a href="/accounts/login">Manage</a>
+          <a href="/manage">Manage</a>
         </div>
       </div>
     </div>

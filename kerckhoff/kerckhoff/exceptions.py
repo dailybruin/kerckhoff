@@ -10,3 +10,7 @@ class KerckhoffCustomException(Exception):
 
 class UserError(KerckhoffCustomException):
     status_code = 400
+
+class AuthenticationRequired(KerckhoffCustomException):
+    status_code = 403
+    error_message = "Login is required to use this resource"

@@ -12,7 +12,7 @@
     "profile": "webpack --profile --json > stats.json"
   },
   "lint-staged": {
-    "*.js": [
+    "*.(js|vue)": [
       "prettier --write",
       "git add"
     ]

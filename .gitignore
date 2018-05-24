@@ -114,3 +114,5 @@ stats.json
 kerckhoff/static/**/*
 
 v8-compile-cache*/**/*
+
+.vscode/

@@ -35,10 +35,20 @@ def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
 
     if request.method == 'GET':
         # List objects
-        page_num = request.GET.get("page", 1)
         packages = Package.objects.filter(package_set__slug=pset_slug).order_by('publish_date').all()
-        paginator = Paginator(packages, 30)
-        page = paginator.get_page(page_num)
+        paginator = Paginator(packages, 2)
+        page_num = 1
+        all_docs = False
+        try:
+            page_num = int(request.GET.get("page", 1))
+            all_docs = request.GET.get("all", False)
+        except ValueError as ex:
+            raise UserError(str(ex))
+
+        if not all_docs:
+            page = paginator.get_page(page_num)
+        else:
+            page = packages            
         meta = {
             "total": paginator.count,
             "num_pages": paginator.num_pages,
@@ -109,7 +119,7 @@ def search(request: HttpRequest, pset_slug: str) -> JsonResponse:
         page = int(request.GET.get("page", 1))
         items_per_page = int(request.GET.get("items", 20))
     except ValueError as ex:
-        raise UserError(ex.error_message)
+        raise UserError(str(ex))
 
     start = (page-1)*items_per_page
     end = (page)*items_per_page

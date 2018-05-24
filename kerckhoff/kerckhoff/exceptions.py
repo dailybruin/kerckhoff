@@ -14,3 +14,5 @@ class UserError(KerckhoffCustomException):
 class AuthenticationRequired(KerckhoffCustomException):
     status_code = 403
     error_message = "Login is required to use this resource"
+    def __init__(self):
+        Exception.__init__(self)

@@ -25,7 +25,7 @@ def api_login_required(methods : List[str]=["POST", "PUT", "PATCH", "DELETE"]):
         def wrap(request: HttpRequest, *args, **kwargs):
             if request.method in methods and not request.user.is_authenticated:
                 raise AuthenticationRequired
-            else request.user.is_authenticated:
+            else:
                 return function(request, *args, **kwargs)
         return wrap
     return decorator

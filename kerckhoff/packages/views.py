@@ -53,6 +53,8 @@ def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
         # Create object
         data = json.loads(request.body)
         form_data = PackageForm(data)
+        # TODO: Refactor this to have the exception automatically thrown and 
+        # serialized by the custom Kerckhoff exception class instead
         if form_data.is_valid():
             model_instance = form_data.save(commit=False)
             print(model_instance)

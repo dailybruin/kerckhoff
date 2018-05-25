@@ -35,7 +35,7 @@ def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
 
     if request.method == 'GET':
         # List objects
-        packages = Package.objects.filter(package_set__slug=pset_slug).order_by('publish_date').all()
+        packages = Package.objects.filter(package_set__slug=pset_slug).order_by('-publish_date').all()
         paginator = Paginator(packages, 30)
         page_num = 1
         all_docs = False

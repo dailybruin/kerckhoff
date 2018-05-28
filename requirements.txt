@@ -28,7 +28,7 @@ gunicorn==19.8.1
 httplib2==0.11.3
 idna==2.6
 ipaddress==1.0.22
-isort==4.2.15
+isort==4.3.4
 jmespath==0.9.3
 jsonlines==1.2.0
 lazy-object-proxy==1.3.1

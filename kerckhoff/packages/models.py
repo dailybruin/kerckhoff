@@ -18,8 +18,11 @@ import imghdr
 import re
 import requests
 import archieml
-
+import arrow
 from search.indexes import PackageIndex
+import logging
+
+logger = logging.getLogger(settings.APP_NAME)
 
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
 s3 = boto3.client('s3', 'us-west-2', config=Config(s3={'addressing_style': 'path'}))
@@ -79,7 +82,7 @@ class Package(models.Model):
     processing = models.BooleanField(default=False)
     cached_article_preview = models.TextField(blank=True)
     publish_date = models.DateField()
-    last_fetched_date = models.DateField(null=True, blank=True)
+    last_fetched_date = models.DateTimeField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     
     # Versioning
@@ -207,6 +210,14 @@ def transfer_to_s3(session, package):
         package.images["s3"] = {}
 
     for idx, image in enumerate(package.images["gdrive"]):
+        # When the image was last modified on google drive
+        last_modified_date = arrow.get(image['modifiedDate']).datetime
+        if package.last_fetched_date > last_modified_date:
+            logger.info(f"{ image['title'] } has not been modified since last fetch.")
+            continue
+        else:
+            logger.info(f"{ image['title'] } has been modified on Google Drive, updating.")
+
         req = get_file(session, image["id"], download=True)
         max_size = (1024, 1024)
 

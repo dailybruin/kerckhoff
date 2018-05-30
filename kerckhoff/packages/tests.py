@@ -15,6 +15,8 @@ class PackageVersionTestCase(TestCase):
         packageA = Package.objects.get(slug="a")
         packageA.create_version(testUser, "This version uses Hong Yi")
         myPV = PackageVersion.objects.get(package=packageA)
+
+        # TODO: individual fields don't really need to be tested - good to keep things shorter
         self.assertEqual(myPV.article_data, "Hong Yi")
         self.assertEqual(myPV.version_description, "This version uses Hong Yi")
         self.assertEqual(myPV.creator.get_username(), "kimjongun")     

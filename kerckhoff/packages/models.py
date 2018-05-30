@@ -188,11 +188,11 @@ class Package(models.Model):
 
 # Snapshot of a Package instance at a particular time
 class PackageVersion(models.Model):
-    package = models.ForeignKey(Package, on_delete=models.PROTECT, null=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    package = models.ForeignKey(Package, on_delete=models.PROTECT)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
     version_description = models.TextField(blank=True)
     article_data = models.TextField(blank=True)
-    data = JSONField(blank=True, default=dict, null=True)
+    data = JSONField(blank=True, default=dict)
     
 
 def rewrite_image_url(package):

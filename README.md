@@ -33,12 +33,23 @@ We are using [Docker][docker doc link] and [Docker-Compose][docker compose doc l
 
 3. Create a .env file in your repository folder with the following contents:
     ``` .env
-    
+    DATABASE_URL=postgres://postgres@db:5432/postgres
+    SITE_HOST=localhost
+    DEBUG=True
+    SECRET_KEY=kerchkoff-secrets
+    S3_SITE_UPLOAD_BUCKET=dev.kerckhoff.dailybruin.com
+    S3_ASSETS_UPLOAD_BUCKET=assets.dailybruin.com
+    AWS_ACCESS_KEY_ID=<your key here>
+    AWS_SECRET_ACCESS_KEY=<your secret key here>
+    REPOSITORY_FOLDER_ID=<your id here>
+    LIVE_PUSH_SERVER=google.com
+    DJANGO_SETTINGS_MODULE=kerckhoff.settings
     ```
+    * **Note**: You need values for `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but you can't use ours ;).
 
 4. Use `docker-compose up` to build/pull and configure the Docker images for the Django server, the Postgres database and Redis automatically based on the configuration in `docker-compose.yml`.
 
-5. The site should now be running on `localhost:5000`, and  the server will automatically restart after any edits you make to Python and JS source files. Refresh the page to see them! (To come: livereload)
+5. The site should now be running on `localhost:5000`, and  the server will automatically restart after any edits you make to Python and JS source files. Refresh the page to see them! (WIP: livereload)
 
 ## How to Contribute
 

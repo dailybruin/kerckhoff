@@ -193,12 +193,14 @@ export default {
     },
     packageData: function(ctx) {
       let promise = axios.get("/api/packages/" + this.packageSet)
+      const currPackageSet = this.packageSet
       return promise.then((res) => {
-          const items = res.data
-          this.currentPage = items.meta.current_page
-          this.totalRows = items.meta.total
-          console.log(items)
-          return items.data
+          if(this.packageSet === currPackageSet) {
+            const items = res.data
+            this.currentPage = items.meta.current_page
+            this.totalRows = items.meta.total
+            return items.data
+          }
         })
     },
     submitForm: function(evt) {

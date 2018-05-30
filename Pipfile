@@ -65,6 +65,7 @@ PyYAML = "==3.12"
 monkeytype = "*"
 
 [dev-packages]
+mypy = "*"
 
 [requires]
 python_version = "3.6"

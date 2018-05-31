@@ -8,6 +8,9 @@
 
 # Kerckhoff
 
+[![Dependencies](https://david-dm.org/daily-bruin/kerckhoff/status.svg?style=flat)](https://david-dm.org/daily-bruin/kerckhoff)
+[![Dev dependencies](https://david-dm.org/daily-bruin/kerckhoff/dev-status.svg?style=flat)](https://david-dm.org/daily-bruin/kerckhoff?type=dev)
+
 Kerckhoff is a static-site management and deployment solution used by the Daily
 Bruin, UCLA's student run daily newspaper.
 

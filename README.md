@@ -45,7 +45,7 @@ We are using [Docker][docker doc link] and [Docker-Compose][docker compose doc l
     LIVE_PUSH_SERVER=google.com
     DJANGO_SETTINGS_MODULE=kerckhoff.settings
     ```
-    * **Note**: You need values for `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but you can't use ours ;).
+    * **Note**: You need values for `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but if you aren't in Daily Bruin, you can't use ours ;). If you are, [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
 
 4. Use `docker-compose up` to build/pull and configure the Docker images for the Django server, the Postgres database and Redis automatically based on the configuration in `docker-compose.yml`.
 

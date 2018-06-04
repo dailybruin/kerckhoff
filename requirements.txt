@@ -2,7 +2,7 @@ archieml==0.3.4
 arrow==0.12.1
 astroid==1.6.4
 backports.functools-lru-cache==1.5
-boto3==1.7.24
+boto3==1.7.31
 botocore==1.10.24
 certifi==2018.4.16
 chardet==3.0.4

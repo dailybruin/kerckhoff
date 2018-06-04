@@ -37,7 +37,7 @@ mccabe==0.6.1
 MonkeyType==18.5.1
 mypy==0.600
 oauth2client==4.1.2
-oauthlib==2.0.2
+oauthlib==2.1.0
 olefile==0.44
 Pillow==4.2.1
 psycopg2==2.7.3

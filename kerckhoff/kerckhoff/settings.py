@@ -255,7 +255,7 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 CACHEOPS_REDIS = env('CACHEOPS_REDIS_ADDRESS', default="redis://redis:6379/1")
 CACHEOPS = {
-    '*.*': {'ops': all, 'timeout': 60*60}
+    '*.*': {'ops': 'all', 'timeout': 60*60},
 }
 
 # Other stuff

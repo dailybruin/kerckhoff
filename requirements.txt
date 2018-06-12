@@ -12,6 +12,7 @@ configparser==3.5.0
 defusedxml==0.5.0
 Django==2.0.2
 django-allauth==0.32.0
+django-cacheops==4.0.6
 django-cors-headers==2.2.0
 django-environ==0.4.4
 django-extensions==1.8.1
@@ -22,6 +23,7 @@ docutils==0.13.1
 elasticsearch==6.2.0
 elasticsearch-dsl==6.1.0
 enum34==1.1.6
+funcy==1.10.2
 future==0.16.0
 futures==3.1.1
 google-api-python-client==1.6.5
@@ -50,6 +52,7 @@ python-openid==2.2.5
 python3-openid==3.1.0
 pytz==2017.2
 PyYAML==3.12
+redis==2.10.6
 requests==2.18.2
 requests-oauthlib==0.8.0
 retype==17.12.0

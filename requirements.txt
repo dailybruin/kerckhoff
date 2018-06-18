@@ -35,7 +35,7 @@ jsonlines==1.2.0
 lazy-object-proxy==1.3.1
 mccabe==0.6.1
 MonkeyType==18.5.1
-mypy==0.600
+mypy==0.610
 oauth2client==4.1.2
 oauthlib==2.0.2
 olefile==0.44

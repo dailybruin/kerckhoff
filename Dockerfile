@@ -9,7 +9,7 @@ COPY ./kerckhoff/assets ./kerckhoff/assets
 RUN npm run build
 
 # Stage 1 - Python dependencies
-FROM python:3-slim
+FROM python:3.6-slim
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /kerckhoff
 

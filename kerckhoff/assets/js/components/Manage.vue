@@ -1,5 +1,5 @@
 <template>
-<div class="container mt-2">
+<div class="container-fluid mt-2">
   <div class="row mb-2">
     <div class="col col-sm-12">
       <h1 class="mt-2">Sites Manager</h1>

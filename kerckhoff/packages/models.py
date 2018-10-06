@@ -212,7 +212,7 @@ def transfer_to_s3(session, package):
     for idx, image in enumerate(package.images["gdrive"]):
         # When the image was last modified on google drive
         last_modified_date = arrow.get(image['modifiedDate']).datetime
-        if package.last_fetched_date > last_modified_date:
+        if package.last_fetched_date is not None and package.last_fetched_date > last_modified_date:
             logger.info(f"{ image['title'] } has not been modified since last fetch.")
             continue
         else:

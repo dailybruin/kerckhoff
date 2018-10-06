@@ -14,7 +14,8 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /kerckhoff
 
 RUN apt-get update && apt-get install -y curl \
-                                         build-essential
+                                         build-essential \
+                                         libpq-dev
 
 WORKDIR /kerckhoff
 

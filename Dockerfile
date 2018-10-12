@@ -15,7 +15,8 @@ RUN mkdir /kerckhoff
 
 RUN apt-get update && apt-get install -y curl \
                                          build-essential \
-                                         libpq-dev
+                                         libpq-dev \
+                                        git
 
 WORKDIR /kerckhoff
 

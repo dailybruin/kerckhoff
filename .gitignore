@@ -109,6 +109,9 @@ kerckhoff/assets/bundles/**/*
 .TemporaryItems
 .Trashes
 
+# VSCode Environment
+.vscode/
+
 stats.json
 
 kerckhoff/static/**/*

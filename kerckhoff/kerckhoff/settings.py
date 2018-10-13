@@ -60,7 +60,9 @@ INSTALLED_APPS = [
     'pages',
     'user_profile',
     'packages',
-    'search'
+    'search',
+
+    'cacheops'
 ]
 
 MIDDLEWARE = [
@@ -249,6 +251,13 @@ ES_HOST = env('ES_HOST', default="es")
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_URLS_REGEX = r'^/api/.*$'
+
+# Cache Stuff
+
+CACHEOPS_REDIS = env('CACHEOPS_REDIS_ADDRESS', default="redis://redis:6379/1")
+CACHEOPS = {
+    'packages.get': {'ops': 'all', 'timeout': 60*60}
+}
 
 # Other stuff
 

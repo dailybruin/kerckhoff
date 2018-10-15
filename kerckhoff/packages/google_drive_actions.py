@@ -79,7 +79,19 @@ def list_folder(session, package):
                 data = session.get(GOOGLE_API_PREFIX + "/v2/files/" + aml['id'] + "/export", params={"mimeType": "text/plain"})
                 aml_text = data.content.decode('utf-8')
         #print("IN ARCHIEML ")
-        aml_data[aml['title']] = archieml.loads(aml_text)
+        aml_content = archieml.loads(aml_text)
+        
+        # HACK: Fixes a bad bug in the archieml parser
+        for key, value in aml_content.items():
+            if isinstance(value, list):
+                for index, item in enumerate(value):
+                    if isinstance(item, dict):
+                        if item.get("type") is None and item.get("value") and isinstance(value[index-1], dict) and value[index-1].get("type"):
+                            aml_content[key][index-1]["value"] = item["value"]
+                            aml_content[key][index] = None
+                aml_content[key] = [ i for i in aml_content[key] if i is not None ]
+
+        aml_data[aml['title']] = aml_content
 
     # only taking the first one - assuming there's only one article file
 

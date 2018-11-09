@@ -1,8 +1,8 @@
-[logo]: https://user-images.githubusercontent.com/1896936/28765492-cb46e55c-757f-11e7-996c-e53a95eba862.png 'Kerckhoff Logo'
-[spec link]: https://docs.google.com/a/media.ucla.edu/document/d/1ejb3iIyqSo2M6-fKhweAkp6MdS63gPsNmQje8iEUggc/edit?usp=sharing 'Kerckhoff Specification Link'
-[docker link]: https://www.docker.com/ 'Docker Homepage'
-[docker doc link]: https://docs.docker.com/ 'Docker Documentation'
-[docker compose doc link]: https://docs.docker.com/compose/ 'Docker Documentation: Compose'
+[logo]: https://user-images.githubusercontent.com/1896936/28765492-cb46e55c-757f-11e7-996c-e53a95eba862.png "Kerckhoff Logo"
+[spec link]: https://docs.google.com/a/media.ucla.edu/document/d/1ejb3iIyqSo2M6-fKhweAkp6MdS63gPsNmQje8iEUggc/edit?usp=sharing "Kerckhoff Specification Link"
+[docker link]: https://www.docker.com/ "Docker Homepage"
+[docker doc link]: https://docs.docker.com/ "Docker Documentation"
+[docker compose doc link]: https://docs.docker.com/compose/ "Docker Documentation: Compose"
 
 ![kerckhoff logo][logo]
 
@@ -30,7 +30,7 @@ works, or reach out to us on Slack.
 1.  Install Docker from the official website. Follow the instructions for your
     specific platform.
 
-1.  Use `git clone https://github.com/daily-bruin/kerckhoff.git` to clone the
+2.  Use `git clone https://github.com/daily-bruin/kerckhoff.git` to clone the
     repository.
 
     * **Note**: If you're using Windows, run the following two commands before
@@ -38,7 +38,7 @@ works, or reach out to us on Slack.
     * `git config --global core.eol lf`
     * `git config --global core.autocrlf input`
 
-1.  Create a .env file in your repository folder with the following contents:
+3.  Create a .env file in your repository folder with the following contents:
 
     ```.env
     DATABASE_URL=postgres://postgres@db:5432/postgres
@@ -59,15 +59,29 @@ works, or reach out to us on Slack.
       Daily Bruin, you can't use ours ;). If you are,
       [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
 
-1.  Now we need to start webpack! Run `npm install` then `npm run watch`.
+4.  Now we need to start webpack! Run `npm install` then `npm run watch`.
 
-1.  Use `docker-compose up` to build/pull and configure the Docker images for
+5.  Use `docker-compose up` to build/pull and configure the Docker images for
     the Django server, the Postgres database and Redis automatically based on
     the configuration in `docker-compose.yml`.
 
-1.  The site should now be running on `localhost:5000`, and the server will
+6.  The site should now be running on `localhost:5000`, and the server will
     automatically restart after any edits you make to Python and JS source
-    files. Refresh the page to see them! (WIP: livereload)
+    files. Refresh the page to see them!
+
+7.  Let's do some server side stuff. You should create an admin user to log in.
+    Open up a shell in the web server container via `docker-compose exec web bash`
+    (Don't stop the currently running containers!). Run `cd kerckhoff` and run `./manage.py migrate`.
+    Now you can run `./manage.py createsuperuser`.
+    Remember your admin username and password!
+    ([What are migrations?](https://docs.djangoproject.com/en/2.1/topics/migrations/)).
+
+8.  Now you will want to set up login for your Kerckhoff instance. Create or get a
+    Google OAuth client id and secret, and visit `localhost:5000/admin`. Login with your newly
+    created admin account, and create a new Social Application (under Social Accounts).
+    Select Google as provider. Set name to Google, and fill in the Client ID and secret key.
+    Also, move the site (example.com) to the right. (help!)
+    Now you can log out, and log in with the usual flow by visiting `localhost:5000/manage`
 
 ## How to Contribute
 

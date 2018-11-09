@@ -10,9 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os
-import environ
 import logging.config
+import os
+
+import environ
 from django.utils.log import DEFAULT_LOGGING
 
 root = environ.Path(__file__) - 3 # three folder back (/a/b/c/ - 3 = /)
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'webpack_loader',
     'corsheaders',
+    'rest_framework',
 
     'allauth',
     'allauth.account',
@@ -205,6 +207,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django Rest Framework
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

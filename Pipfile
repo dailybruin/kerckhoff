@@ -62,6 +62,9 @@ PyYAML = "==3.12"
 arrow = "*"
 bleach = "*"
 "html5lib" = "*"
+djangorestframework = "*"
+django-filter = "*"
+markdown = "*"
 
 [dev-packages]
 mypy = "*"
@@ -69,6 +72,11 @@ pylint-celery = "*"
 pylint-django = "*"
 monkeytype = "*"
 pylint = "*"
+black = "*"
 
 [requires]
 python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
+

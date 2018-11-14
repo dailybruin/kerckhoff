@@ -22,6 +22,7 @@ from user_profile import views as profile_views
 
 router = routers.DefaultRouter()
 router.register(r"packageSet", package_views.PackageSetViewSet)
+router.register(r"userProfile", profile_views.UserProfileViewSet)
 
 urlpatterns = [
     url(r"^api/v2/", include(router.urls)),

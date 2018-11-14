@@ -34,11 +34,11 @@ def list_or_create(request: HttpRequest, pset_slug: str) -> JsonResponse:
     """
     GET: List the packages for a particular PackageSet
     POST: Create a new package within the specified PackageSet
-    
+
     Arguments:
         request {HttpRequest} -- the request
         pset_slug {str} -- the package slug ID
-    
+
     Returns:
         JsonResponse -- a JSON of the results
     """

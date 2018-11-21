@@ -19,14 +19,20 @@ from search.indexes import PackageIndex
 from search.search import elasticsearch_client
 
 from .forms import PackageForm
-from .models import Package, PackageSet
-from .serializers import PackageSetSerializer
-
+from .models import Package, PackageSet, PackageVersion
+from .serializers import PackageSetSerializer, PackageSerializer, PackageVersionSerializer
 
 class PackageSetViewSet(viewsets.ModelViewSet):
     queryset = PackageSet.objects.all().order_by("-slug")
     serializer_class = PackageSetSerializer
 
+class PackageViewSet(viewsets.ModelViewSet):
+    queryset = Package.objects.all().order_by("-updated_at")
+    serializer_class = PackageSerializer
+
+class PackageVersionViewSet(viewsets.ModelViewSet):
+    queryset = Package.objects.all().order_by("-updated_at")
+    serializer_class = PackageVersionSerializer
 
 @require_http_methods(["GET", "POST"])
 @api_login_required()

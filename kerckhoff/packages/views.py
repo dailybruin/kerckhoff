@@ -31,7 +31,7 @@ class PackageViewSet(viewsets.ModelViewSet):
     serializer_class = PackageSerializer
 
 class PackageVersionViewSet(viewsets.ModelViewSet):
-    queryset = Package.objects.all().order_by("-updated_at")
+    queryset = PackageVersion.objects.all().order_by("-updated_at")
     serializer_class = PackageVersionSerializer
 
 @require_http_methods(["GET", "POST"])

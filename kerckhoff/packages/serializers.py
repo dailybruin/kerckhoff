@@ -17,7 +17,8 @@ class PackageSerializer(serializers.ModelSerializer):
                     "created_at", "updated_at", "latest_version")
 
 class PackageVersionSerializer(serializers.ModelSerializer):
+    package_slug = serializers.ReadOnlyField(source='package.slug')
+
     class Meta:
         model = PackageVersion
-        fields = ("package", "creator", "version_description", "article_data", "data"
-                    "created_at", "updated_at")
+        fields = ("__all__")

@@ -16,12 +16,9 @@ class PackageVersionTestCase(TestCase):
         packageA.create_version(testUser, "This version uses Hong Yi")
         myPV = PackageVersion.objects.get(package=packageA)
 
-        # TODO: individual fields don't really need to be tested - good to keep things shorter
-        self.assertEqual(myPV.article_data, "Hong Yi")
-        self.assertEqual(myPV.version_description, "This version uses Hong Yi")
-        self.assertEqual(myPV.creator.get_username(), "kimjongun")     
+        # Check if PV database is properly updated with new PV object instance
+        self.assertEqual(myPV.version_description, "This version uses Hong Yi") 
         self.assertEqual(packageA.latest_version, myPV)
-        
         
         # Check handling of multiple PackageVersions 
         packageA.cached_article_preview = "HONG YEET"
@@ -35,4 +32,10 @@ class PackageVersionTestCase(TestCase):
         # Check if able to retrieve publish_date of latest PackageVersion
         latestPV = packageA.latest_version
         self.assertEqual(latestPV.article_data, "HONG YEET")
+
+        packageDB = Package.objects
+        packageSetDB = PackageSet.objects
+        packageVersionDB = PackageVersion.objects
+        # import code
+        # code.interact(local=locals())
         

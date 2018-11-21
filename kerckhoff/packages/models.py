@@ -87,7 +87,7 @@ class Package(models.Model):
         else:
             return self._content_type
 
-    # For versioning feature, accepts string arguments name(of creater) and change_summary
+    # For versioning feature, accepts string arguments name(of creator) and change_summary
     def create_version(self, user, change_summary):
         pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=user, version_description=change_summary)
         pv.save()
@@ -155,14 +155,11 @@ class Package(models.Model):
 
     def push_to_live(self):
         res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
-        
-        # Versioning
-        # self.create_version()
-
         return res.ok
 
     # TODO - put this in a workqueue
     def fetch_from_gdrive(self, user):
+        # TODO Actually use this manual locking lol
         self.processing = True
         self.save()
         try:
@@ -176,6 +173,10 @@ class Package(models.Model):
             transfer_to_s3(google, self)
             self.cached_article_preview = rewrite_image_url(self)
             self.last_fetched_date = timezone.now()
+            # Create new PV instance
+            # TODO Once frontend is done, query for proper change_summary. Default is last_fetched_date
+            self.create_version(user, "New PackageVersion created on {0}".format(self.last_fetched_date))
+
         except Exception as e:
             raise e
         finally:

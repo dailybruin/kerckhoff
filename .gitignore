@@ -102,6 +102,7 @@ node_modules/
 webpack-stats.json
 
 kerckhoff/assets/bundles/**/*
+assets/bundles/*
 
 # General
 *.DS_Store

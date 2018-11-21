@@ -31,7 +31,7 @@ class PackageSet(models.Model):
         }
 
     def save(self, *args, **kwargs):
-        self.drive_folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
+        self.drive_folder_id = url_parser(self.drive_folder_url)
         super().save(*args, **kwargs)
 
     def populate(self, user):
@@ -140,7 +140,7 @@ class Package(models.Model):
             self.drive_folder_id = drive_id
             self.drive_folder_url = url
         else:
-            folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
+            folder_id = url_parser(self.drive_folder_url)
             details = get_file(google, folder_id)
             if details.get("mimeType") != "application/vnd.google-apps.folder":
                 raise ValidationError({"drive_folder_url" : ["The Google drive link must be a link to an existing folder!"]})

@@ -30,6 +30,13 @@ def rewrite_image_url(package):
     text = IMAGE_REGEX.sub(replace_url,package.cached_article_preview)
     return text
 
+def url_parser(url_string):
+    domain = url_string.split("?")
+    separate = domain[0].split('/')
+    url_string = separate[len(separate) - 1]
+    return url_string
+
+
 def transfer_to_s3(session: OAuth2Session, package):
     if package.images.get("s3") is None:
         package.images["s3"] = {}

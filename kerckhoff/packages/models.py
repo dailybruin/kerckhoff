@@ -1,5 +1,6 @@
-import re
 import logging
+import re
+from typing import List
 
 import requests
 from django.conf import settings
@@ -12,29 +13,35 @@ from requests_oauthlib import OAuth2Session
 
 from search.indexes import PackageIndex
 
-from .utils import transfer_to_s3, rewrite_image_url
-from .google_drive_actions import get_file, get_oauth2_session, list_folder, create_package, add_to_repo_folder
 from .constants import *
+from .google_drive_actions import (
+    add_to_repo_folder,
+    create_package,
+    get_file,
+    get_oauth2_session,
+    list_folder,
+)
+from .utils import rewrite_image_url, transfer_to_s3
 
 logger = logging.getLogger(settings.APP_NAME)
+
 
 class PackageSet(models.Model):
     slug = models.SlugField(max_length=32, primary_key=True)
     drive_folder_id = models.CharField(max_length=512, blank=True)
     drive_folder_url = models.URLField()
-    default_content_type = models.CharField(max_length=2, choices=CONTENT_TYPE_CHOICES, default=PLAIN_TEXT)
+    default_content_type = models.CharField(
+        max_length=2, choices=CONTENT_TYPE_CHOICES, default=PLAIN_TEXT
+    )
 
     def as_dict(self):
-        return {
-            "slug": self.slug,
-            "gdrive_url": self.drive_folder_url,
-        }
+        return {"slug": self.slug, "gdrive_url": self.drive_folder_url}
 
     def save(self, *args, **kwargs):
-        self.drive_folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
+        self.drive_folder_id = self.drive_folder_url.rsplit("/", 1)[-1]
         super().save(*args, **kwargs)
 
-    def populate(self, user):
+    def populate(self, user, update_packages=False) -> List["Package"]:
         print("Starting populate for %s" % self.slug)
         google = get_oauth2_session(user)
         # we don't care about the aml_data dict here
@@ -50,17 +57,19 @@ class PackageSet(models.Model):
                     drive_folder_id=folder["id"],
                     drive_folder_url=folder["alternateLink"],
                     publish_date=timezone.now(),
-                    package_set=self
+                    package_set=self,
                 )
                 instances.append(pkg)
-        for instance in instances:
-            print("Processing %s" % instance.slug)
-            try:
-                instance.fetch_from_gdrive(user)
-            except Exception as e:
-                print("%s failed with error: %s" % (instance.slug, e))
-                continue
-    
+        if update_packages:
+            for instance in instances:
+                print("Processing %s" % instance.slug)
+                try:
+                    instance.fetch_from_gdrive(user)
+                except Exception as e:
+                    print("%s failed with error: %s" % (instance.slug, e))
+                    continue
+        return instances
+
 
 class Package(models.Model):
     slug = models.CharField(max_length=64, primary_key=True)
@@ -75,10 +84,18 @@ class Package(models.Model):
     publish_date = models.DateField()
     last_fetched_date = models.DateTimeField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
-    _content_type = models.CharField(max_length=2, choices=CONTENT_TYPE_CHOICES, blank=True, default="")
+    _content_type = models.CharField(
+        max_length=2, choices=CONTENT_TYPE_CHOICES, blank=True, default=""
+    )
 
     # Versioning
-    latest_version = models.ForeignKey('PackageVersion', related_name='versions', on_delete=models.CASCADE, null=True, blank=True)
+    latest_version = models.ForeignKey(
+        "PackageVersion",
+        related_name="versions",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     @property
     def content_type(self):
@@ -89,24 +106,29 @@ class Package(models.Model):
 
     # For versioning feature, accepts string arguments name(of creater) and change_summary
     def create_version(self, user, change_summary):
-        pv = PackageVersion(package=self, article_data=self.cached_article_preview, data=self.data, creator=user, version_description=change_summary)
+        pv = PackageVersion(
+            package=self,
+            article_data=self.cached_article_preview,
+            data=self.data,
+            creator=user,
+            version_description=change_summary,
+        )
         pv.save()
         self.latest_version = pv
         # return 'Successfully created PackageVersion object!'
-
 
     def indexing(self):
         """
         Adds to the elasticsearch index the current package instance
         """
         idx = PackageIndex(
-            meta={'id': self.slug},
+            meta={"id": self.slug},
             slug=self.slug,
             package_set=self.package_set.slug,
             description=self.description,
             cached_article_preview=self.cached_article_preview,
-            article_text=self.cached_article_preview, # TODO: Change when article versioning is completed
-            publish_date=self.publish_date
+            article_text=self.cached_article_preview,  # TODO: Change when article versioning is completed
+            publish_date=self.publish_date,
         )
         idx.save()
         return idx.to_dict(include_meta=True)
@@ -118,7 +140,7 @@ class Package(models.Model):
     def as_endpoints(self):
         return {
             "slug": self.slug,
-            "endpoint": "/api/packages/" + self.package_set.slug + "/" + self.slug
+            "endpoint": "/api/packages/" + self.package_set.slug + "/" + self.slug,
         }
 
     def as_dict(self):
@@ -130,7 +152,7 @@ class Package(models.Model):
             "data": self.data,
             "article": self.cached_article_preview,
             "publish_date": self.publish_date,
-            "last_fetched_date": self.last_fetched_date
+            "last_fetched_date": self.last_fetched_date,
         }
 
     def setup_and_save(self, user, pset_slug):
@@ -140,10 +162,16 @@ class Package(models.Model):
             self.drive_folder_id = drive_id
             self.drive_folder_url = url
         else:
-            folder_id = self.drive_folder_url.rsplit('/', 1)[-1]
+            folder_id = self.drive_folder_url.rsplit("/", 1)[-1]
             details = get_file(google, folder_id)
             if details.get("mimeType") != "application/vnd.google-apps.folder":
-                raise ValidationError({"drive_folder_url" : ["The Google drive link must be a link to an existing folder!"]})
+                raise ValidationError(
+                    {
+                        "drive_folder_url": [
+                            "The Google drive link must be a link to an existing folder!"
+                        ]
+                    }
+                )
             self.drive_folder_id = folder_id
             results = add_to_repo_folder(google, self)
             print(results)
@@ -154,8 +182,11 @@ class Package(models.Model):
         return self
 
     def push_to_live(self):
-        res = requests.post(settings.LIVE_PUSH_SERVER + "/update", json={'id': self.package_set.slug + '/' + self.slug})
-        
+        res = requests.post(
+            settings.LIVE_PUSH_SERVER + "/update",
+            json={"id": self.package_set.slug + "/" + self.slug},
+        )
+
         # Versioning
         # self.create_version()
 
@@ -183,6 +214,7 @@ class Package(models.Model):
             self.save()
 
         return self
+
 
 # Snapshot of a Package instance at a particular time
 class PackageVersion(models.Model):

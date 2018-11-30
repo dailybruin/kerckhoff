@@ -12,6 +12,10 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.search import Response
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response as DRFResponse
+from rest_framework.views import APIView
 
 from kerckhoff.exceptions import UserError
 from kerckhoff.util.decorators import api_login_required
@@ -19,13 +23,38 @@ from search.indexes import PackageIndex
 from search.search import elasticsearch_client
 
 from .forms import PackageForm
+from .google_drive_actions import list_folder
 from .models import Package, PackageSet
 from .serializers import PackageSetSerializer
 
 
 class PackageSetViewSet(viewsets.ModelViewSet):
+    """
+    CRUD APIs for the PackageSet    
+    """
+
     queryset = PackageSet.objects.all().order_by("-slug")
     serializer_class = PackageSetSerializer
+
+
+class PackageSetRefreshView(APIView):
+    """
+    API to refresh the PackageSet.
+    """
+
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, slug=None):
+        """
+        Picks up all the folders in the package set, and adds them as a package if they do not already exist.
+        """
+        package: PackageSet = PackageSet.objects.get(slug=slug)
+        new_packages = package.populate(request.user, update_packages=False)
+        # TODO: change this to return new packages, for now return 200
+        return DRFResponse({"packages": [package.slug for package in new_packages]})
+
+
+## The following APIs are for v1. We have stopped using them!
 
 
 @require_http_methods(["GET", "POST"])

@@ -16,15 +16,18 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
 
 from packages import views as package_views
 from user_profile import views as profile_views
 
 router = routers.DefaultRouter()
-router.register(r"packageSet", package_views.PackageSetViewSet)
+router.register(r"package-set", package_views.PackageSetViewSet)
 
 urlpatterns = [
     url(r"^api/v2/", include(router.urls)),
+    url(r"^api/v2/docs", include_docs_urls(title="Kerckhoff API Documentation")),
+    url(r"^api/v2/package-set/", include("packages.api_urls")),
     url(r"^admin/", admin.site.urls),
     url(r"^user/(?P<name>\w+)/$", profile_views.profile),
     url(r"^manage/", profile_views.profile),

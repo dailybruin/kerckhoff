@@ -20,7 +20,7 @@ def profile(request):
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = UserProfile.objects.all().order_by("+last_name")
+    queryset = UserProfile.objects.all().order_by("-last_name")
     serializer_class = UserProfileSerializer
 
 

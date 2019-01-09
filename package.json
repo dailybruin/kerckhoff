@@ -48,6 +48,7 @@
     "gray-matter": "^3.1.1",
     "js-cookie": "^2.2.0",
     "marked": "^0.3.19",
+    "npm": "^6.5.0",
     "vue": "^2.5.16",
     "vue-awesome": "^2.3.5",
     "vue-router": "^2.8.1",

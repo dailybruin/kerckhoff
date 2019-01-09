@@ -17,6 +17,7 @@
         <b-nav is-nav-bar>
           <b-nav-item>Pages</b-nav-item>
           <b-nav-item>Team</b-nav-item>
+          <b-nav-item href='/accounts/profile'>Profile</b-nav-item>
         </b-nav>
 
         <b-nav is-nav-bar class="ml-auto">

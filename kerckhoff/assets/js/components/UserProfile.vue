@@ -35,13 +35,12 @@ export default {
     };
   },
   beforeMount: function() {
-    axios.get("/api/v2/userProfile/6/?format=json").then(res => {
+    axios.get("/api/v2/userProfile/current/?format=json").then(res => {
       this.first_name = res.data.first_name;
       this.email = res.data.email;
       this.profile_img = res.data.profile_img;
       this.github_url = res.data.github_url;
       this.linkedin_url = res.data.linkedin_url;
-      console.log(info);
     });
   }
 };

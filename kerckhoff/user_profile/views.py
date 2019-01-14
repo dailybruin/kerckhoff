@@ -5,6 +5,9 @@ import urllib.parse
 from kerckhoff.util.decorators import api_login_required
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+import json
 from .utils import user_to_json
 from .models import UserProfile
 from .serializers import UserProfileSerializer
@@ -22,6 +25,11 @@ def profile(request):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all().order_by("-last_name")
     serializer_class = UserProfileSerializer
+
+    @action(detail=False, url_path="current", url_name="current")
+    def current_user_info(self, request):
+        # bad - we shouldnt convert from json to string to json
+        return Response(json.loads(user_to_json(request.user)))
 
 
 # the view to redirect to the Google login page

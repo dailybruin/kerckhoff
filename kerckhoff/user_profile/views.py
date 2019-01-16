@@ -8,7 +8,6 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 import json
-from .utils import user_to_json
 from .models import UserProfile
 from .serializers import UserProfileSerializer
 
@@ -16,10 +15,8 @@ GOOGLE_LOGIN_URL_PREFIX = "/accounts/google/login/?"
 
 
 @login_required
-def profile(request):
-    user_info = user_to_json(request.user)
-    context = {"user_info": user_info}
-    return render(request, "mgmt.html", context)
+def manage_sites(request):
+    return render(request, "mgmt.html")
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -28,8 +25,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, url_path="current", url_name="current")
     def current_user_info(self, request):
-        # bad - we shouldnt convert from json to string to json
-        return Response(json.loads(user_to_json(request.user)))
+        return Response(UserProfileSerializer(request.user.profile).data)
 
 
 # the view to redirect to the Google login page

@@ -2,13 +2,10 @@
 {% load render_bundle from webpack_loader %}
 
 {% block content %}
-    <div id="app"></div>
+<div id="app"></div>
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript">
-    let info = {{ user_info | safe }};        
-</script>
 {% render_bundle 'common' %}
 {% render_bundle 'management' %}
 {% endblock %}

@@ -27,8 +27,7 @@ router.register(r"userProfile", profile_views.UserProfileViewSet)
 urlpatterns = [
     url(r"^api/v2/", include(router.urls)),
     url(r"^admin/", admin.site.urls),
-    url(r"^user/(?P<name>\w+)/$", profile_views.profile),
-    url(r"^manage/", profile_views.profile),
+    url(r"^manage/", profile_views.manage_sites),
     url(r"^accounts/", include("user_profile.urls")),
     url(r"^accounts/", include("allauth.urls")),
     url(r"^api/", include("api.urls")),

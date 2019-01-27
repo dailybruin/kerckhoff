@@ -12,7 +12,7 @@ from django.views.decorators.http import require_GET, require_http_methods, requ
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.search import Response
 
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -33,9 +33,51 @@ class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all().order_by("-updated_at")
     serializer_class = PackageSerializer
 
-    @action(detail=True)
     # Just do update_package, but first do nested-url so we can fetch id
     # AND pset_slug. (id is pk aka primarykey)
+
+    # DRF extra action 1
+    # @require_POST
+    # @api_login_required()
+    # def update_package(request, pset_slug, id):
+    #     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
+    #     res = package.fetch_from_gdrive(request.user)
+    #     return JsonResponse(model_to_dict(res))
+    @action(detail=True, methods=['post'])
+    def update_package(self, request, pset_slug, id):
+        package = queryset.filter(package_set__slug=pset_slug, slug=id)
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            res = package.fetch_from_gdrive(request.user)
+            return Response(model_to_dict(res))
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+    # DRF extra action 2
+    # @require_POST
+    # @api_login_required()
+    # def push_to_live(request: HttpRequest, pset_slug: str, id: str):
+    #     package = Package.objects.get(package_set__slug=pset_slug, slug=id)
+    #     res = package.push_to_live()
+    #     if res:
+    #         return HttpResponse(status=200)
+    #     return HttpResponse(status=400)
+    @action(detail=True, methods=['post'])
+    def push_to_live(self, request: HttpRequest, pset_slug: str, id: str):
+        package = queryset.filter(package_set__slug=pset_slug, slug=id)
+        serializer = serializer_class(data=request.data)
+        if serializer.is_valid():
+            res = package.push_to_live()
+            if res:
+                return Response({'status': 'push_to_live() ok'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response({'status': 'push_to_live() bad request'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 class PackageVersionViewSet(viewsets.ModelViewSet):
     queryset = PackageVersion.objects.all().order_by("-updated_at")

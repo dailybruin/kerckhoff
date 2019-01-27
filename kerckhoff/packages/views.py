@@ -11,7 +11,10 @@ from django.shortcuts import render
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 from elasticsearch_dsl import Q, Search
 from elasticsearch_dsl.search import Response
+
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from kerckhoff.exceptions import UserError
 from kerckhoff.util.decorators import api_login_required
@@ -30,9 +33,15 @@ class PackageViewSet(viewsets.ModelViewSet):
     queryset = Package.objects.all().order_by("-updated_at")
     serializer_class = PackageSerializer
 
+    @action(detail=True)
+    # Just do update_package, but first do nested-url so we can fetch id
+    # AND pset_slug. (id is pk aka primarykey)
+
 class PackageVersionViewSet(viewsets.ModelViewSet):
     queryset = PackageVersion.objects.all().order_by("-updated_at")
     serializer_class = PackageVersionSerializer
+    #TODO Overwrite default drf create method, custom user input when we create a new PV instance
+    
 
 @require_http_methods(["GET", "POST"])
 @api_login_required()

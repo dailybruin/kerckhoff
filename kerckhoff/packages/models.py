@@ -196,3 +196,6 @@ class PackageVersion(models.Model):
     data = JSONField(blank=True, default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    #TODO 
+    # Add package stateEnum for future (freeze should change state)

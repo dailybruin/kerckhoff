@@ -65,6 +65,7 @@ bleach = "*"
 djangorestframework = "*"
 django-filter = "*"
 markdown = "*"
+coreapi = "*"
 
 [dev-packages]
 mypy = "*"

@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
 
 from packages import views as package_views
 from user_profile import views as profile_views
@@ -26,6 +27,7 @@ router.register(r"userProfile", profile_views.UserProfileViewSet)
 
 urlpatterns = [
     url(r"^api/v2/", include(router.urls)),
+    url(r"^api/v2/docs/", include_docs_urls(title="Kerckhoff API Documentation")),
     url(r"^admin/", admin.site.urls),
     url(r"^manage/", profile_views.manage_sites),
     url(r"^accounts/", include("user_profile.urls")),

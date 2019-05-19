@@ -135,11 +135,10 @@ export default {
         });
       },
       set: function(idx) {
-        if (idx) {
+        if (idx >= 0 && this.packageSets[idx]) {
           this.packageSetDetails = this.packageSets[idx];
           this.packageSet = this.packageSets[idx].slug;
-          console.log(this.$refs.packagesTable[idx].refresh);
-          this.refreshTable();
+          this.getPackageData();
         }
       }
     }
@@ -197,10 +196,7 @@ export default {
   },
   methods: {
     refreshTable: function() {
-      let idx = this.packageSets.findIndex(ps => {
-        return ps.slug == this.packageSet;
-      });
-      this.$refs.packagesTable[idx].refresh();
+      this.getPackageData();
     },
     getPackageData: function(ctx) {
       let promise = axios.get(

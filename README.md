@@ -66,7 +66,7 @@ works, or reach out to us on Slack.
 
 6.  Use `docker-compose build` to build/pull and configure the Docker images
     for the Django server. Then run `docker-compose run web ./kerckhoff/manage.py migrate` 
-    to set up Django's database. Lastly, use 'docker-compose up` to start the server.
+    to set up Django's database. Lastly, use `docker-compose up` to start the server.
 
 6.  The site should now be running on `localhost:5000`, and the server will
     automatically restart after any edits you make to Python and JS source
@@ -80,7 +80,8 @@ works, or reach out to us on Slack.
     Google OAuth client id and secret, and visit `localhost:5000/admin/`. Login with your newly
     created admin account, and create a new Social Application (under Social Accounts).
     Select Google as provider. Set name to Google, fill in the Client ID and secret key and
-    move the site (example.com) to the right. (help!)
+    move the site (example.com) to the right. (help!). You can find the Client ID and the secret
+    key [here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1526580559000282)
     Now you can log out, and log in with the usual flow by visiting `localhost:5000/manage`
 
 ## How to Contribute

@@ -59,28 +59,28 @@ works, or reach out to us on Slack.
       Daily Bruin, you can't use ours ;). If you are,
       [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
 
-4.  Now we need to start webpack! Run `npm install` then `npm run watch`.
+4.  Now we need to install node version 8! There are several ways to do this. I recommend using
+    [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
 
-5.  Use `docker-compose up` to build/pull and configure the Docker images for
-    the Django server, the Postgres database and Redis automatically based on
-    the configuration in `docker-compose.yml`.
+5.  Now we need to start webpack! Run `npm install` then `npm run watch`.
+
+6.  Use `docker-compose build` to build/pull and configure the Docker images
+    for the Django server. Then run `docker-compose run web ./kerckhoff/manage.py migrate` 
+    to set up Django's database. Lastly, use 'docker-compose up` to start the server.
 
 6.  The site should now be running on `localhost:5000`, and the server will
     automatically restart after any edits you make to Python and JS source
     files. Refresh the page to see them!
 
 7.  Let's do some server side stuff. You should create an admin user to log in.
-    Open up a shell in the web server container via `docker-compose exec web bash`
-    (Don't stop the currently running containers!). Run `cd kerckhoff` and run `./manage.py migrate`.
-    Now you can run `./manage.py createsuperuser`.
+    Create a superuser using `docker-compose run web ./kerckhoff/manage.py createsuperuser`
     Remember your admin username and password!
-    ([What are migrations?](https://docs.djangoproject.com/en/2.1/topics/migrations/)).
 
 8.  Now you will want to set up login for your Kerckhoff instance. Create or get a
-    Google OAuth client id and secret, and visit `localhost:5000/admin`. Login with your newly
+    Google OAuth client id and secret, and visit `localhost:5000/admin/`. Login with your newly
     created admin account, and create a new Social Application (under Social Accounts).
-    Select Google as provider. Set name to Google, and fill in the Client ID and secret key.
-    Also, move the site (example.com) to the right. (help!)
+    Select Google as provider. Set name to Google, fill in the Client ID and secret key and
+    move the site (example.com) to the right. (help!)
     Now you can log out, and log in with the usual flow by visiting `localhost:5000/manage`
 
 ## How to Contribute

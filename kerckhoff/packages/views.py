@@ -4,7 +4,7 @@ import math
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator
+#from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -18,6 +18,7 @@ from kerckhoff.util.decorators import api_login_required
 from search.indexes import PackageIndex
 from search.search import elasticsearch_client
 
+from .paginator import Paginator
 from .forms import PackageForm
 from .models import Package, PackageSet
 from .serializers import PackageSetSerializer

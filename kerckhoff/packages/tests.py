@@ -1,6 +1,11 @@
-from django.contrib.auth.models import User
+import math
+#from django.contrib.auth.models import User
 from django.test import TestCase
 from .models import PackageVersion, Package, PackageSet
+from .paginator import Paginator
+from django.core.paginator import Page
+
+
 
 # Create your tests here.
 class PackageVersionTestCase(TestCase):
@@ -38,4 +43,77 @@ class PackageVersionTestCase(TestCase):
         packageVersionDB = PackageVersion.objects
         # import code
         # code.interact(local=locals())
-        
+class PaginatorTestCase(TestCase):        
+    def test_paginator_basic():
+        array = [i for i in range(0, 200)]
+        paginator1 = Paginator(array, 30)
+        paginator2 = Paginator(array, 20)
+        self.assertEqual(paginator1.count, 200)
+        self.assertEqual(paginator2.count, 200)
+        self.assertEqual(paginator1.num_pages, math.ceil(200/30))
+        self.assertEqual(paginator2.num_pages, math.ceil(200/20))
+        # check all elements in a page
+        for i in range(0, 200):
+            inside = False
+            for j in range(0, paginator1.num_pages):
+                inside |= array[i] in paginator1.get_page(j).object_list
+                if inside:
+                    break
+            self.assertEquals(inside, True)
+            inside = False
+            for j in range(0, paginator2.num_pages):
+                inside |= array[i] in paginator2.get_page(j).object_list
+                if inside:
+                    break
+      self.assertEquals(inside, True)
+
+   #check that only last page doesn't have max number elements
+   for i in range(0, paginator1.num_pages):
+      if(i < paginator1.num_pages - 1): # if not last page, make sure that it has 30 elements
+         self.assertEqual(len(paginator1.get_page(i)), 30)
+      else:
+         self.assertEqual(len(paginator1.get_page(i)), 200%paginator1.per_page)
+   for i in range(0, paginator2.num_pages):
+      if(i < paginator2.num_pages - 1): # if not last page, make sure that it has 20 elements
+         self.assertEqual(len(paginator2.get_page(i)), paginator2.per_page)
+      else:
+         self.assertEqual(len(paginator2.get_page(i)), 200%paginator2.per_page)   
+
+
+    def test_paginator_orphans():
+        array = [i for i in range(0, 200)]
+        paginator1 = Paginator(array, 30, 15) # if orphan 20, then 6 pages, otherwise 7
+        paginator2 = Paginator(array, 45, 20)   # if orphan 20, then 4 pages, otherwise 5
+        self.assertEqual(paginator1.count, 200)
+        self.assertEqual(paginator2.count, 200)
+        self.assertEqual(paginator1.num_pages, math.ceil((200 - paginator2.orphans)/paginator1.per_page))
+        self.assertEqual(paginator2.num_pages, math.ceil((200 - paginator2.orphans)/paginator2.per_page))
+        # check all elements in a page
+        for i in range(0, 200):
+            inside = False
+            for j in range(0, paginator1.num_pages):
+                inside |= array[i] in paginator1.get_page(j).object_list
+                if inside:
+                    break
+            self.assertEquals(inside, True)
+            inside = False
+            for j in range(0, paginator2.num_pages):
+                inside |= array[i] in paginator2.get_page(j).object_list
+                if inside:
+                    break
+            self.assertEquals(inside, True)
+        #check that only last page doesn't have max number elements
+        for i in range(0, paginator1.num_pages):
+            if(i < paginator1.num_pages - 1): # if not last page, make sure that it has 30 elements
+                self.assertEqual(len(paginator1.get_page(i)), paginator1.per_page)
+            else:         
+                self.assertEqual(len(paginator1.get_page(i)), 
+                                 (200%paginator1.per_page < paginator1.orphans)*paginator1.per_page + 200%paginator1.per_page)
+        for i in range(0, paginator2.num_pages):
+            if(i < paginator2.num_pages - 1): # if not last page, make sure that it has 20 elements
+                self.assertEqual(len(paginator2.get_page(i)), paginator2.per_page)
+            else:
+                self.assertEqual(len(paginator2.get_page(i)), 
+                                 (200%paginator2.per_page < paginator2.orphans)*paginator2.per_page + 200%paginator2.per_page)
+
+

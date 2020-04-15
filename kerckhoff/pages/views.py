@@ -3,9 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from pages.models import Page
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger
 import math
 import json
+
+from packages.paginator import Paginator
 
 # Create your views here.
 

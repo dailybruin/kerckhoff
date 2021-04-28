@@ -76,6 +76,8 @@ class Package(models.Model):
     last_fetched_date = models.DateTimeField(null=True, blank=True)
     package_set = models.ForeignKey(PackageSet, on_delete=models.PROTECT)
     _content_type = models.CharField(max_length=2, choices=CONTENT_TYPE_CHOICES, blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     # Versioning
     latest_version = models.ForeignKey('PackageVersion', related_name='versions', on_delete=models.CASCADE, null=True, blank=True)
@@ -192,3 +194,8 @@ class PackageVersion(models.Model):
     version_description = models.TextField(blank=True)
     article_data = models.TextField(blank=True)
     data = JSONField(blank=True, default=dict)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    #TODO 
+    # Add package stateEnum for future (freeze should change state)

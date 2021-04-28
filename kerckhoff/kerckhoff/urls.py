@@ -22,6 +22,8 @@ from user_profile import views as profile_views
 
 router = routers.DefaultRouter()
 router.register(r"packageSet", package_views.PackageSetViewSet)
+router.register(r"package", package_views.PackageViewSet)
+router.register(r"packageVersion", package_views.PackageVersionViewSet)
 
 urlpatterns = [
     url(r"^api/v2/", include(router.urls)),

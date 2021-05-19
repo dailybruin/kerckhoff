@@ -81,7 +81,7 @@ works, or reach out to us on Slack.
     created admin account, and create a new Social Application (under Social Accounts).
     Select Google as provider. Set name to Google, fill in the Client ID and secret key and
     move the site (example.com) to the right. (help!). You can find the Client ID and the secret
-    key [here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1526580559000282)
+    key [here](https://dailybruin.slack.com/archives/C0150STGRF1/p1621395903000900)
     Now you can log out, and log in with the usual flow by visiting `localhost:5000/manage`
 
 ## How to Contribute

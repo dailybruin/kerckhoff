@@ -13,6 +13,7 @@ from PIL import Image
 from requests_oauthlib import OAuth2Session
 
 from .google_drive_actions import get_file
+from kerckhoff.settings import S3_DOMAIN_OF_UPLOADED_IMAGES
 
 IMAGE_REGEX = re.compile(r"!\[[^\]]+\]\(([^)]+)\)")
 S3_BUCKET = settings.S3_ASSETS_UPLOAD_BUCKET
@@ -80,7 +81,7 @@ def transfer_to_s3(session: OAuth2Session, package):
                 )
 
                 package.images["s3"][image["title"]] = {
-                    "url": "https://assets.dailybruin.com/{0}".format(fn), # TODO: replace with something configurable
+                    "url": "{0}/{1}".format(S3_DOMAIN_OF_UPLOADED_IMAGES, fn), 
                     "key": fn,
                     "hash": image_hash,
                     "s3_fields": response

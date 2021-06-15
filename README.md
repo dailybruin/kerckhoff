@@ -57,7 +57,7 @@ works, or reach out to us on Slack.
     * **Note**: You need values for `AWS_ACCESS_KEY_ID`,
       `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but if you aren't in
       Daily Bruin, you can't use ours ;). If you are,
-      [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
+      [click here](https://dailybruin.slack.com/archives/C0150STGRF1/p1623724264001600)!
 
 4.  Now we need to install node version 8! There are several ways to do this. I recommend using
     [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).

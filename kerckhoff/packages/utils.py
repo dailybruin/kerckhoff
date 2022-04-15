@@ -11,6 +11,7 @@ from botocore.client import Config
 from django.conf import settings
 from PIL import Image
 from requests_oauthlib import OAuth2Session
+from django.conf import settings
 
 from .google_drive_actions import get_file
 
@@ -80,7 +81,7 @@ def transfer_to_s3(session: OAuth2Session, package):
                 )
 
                 package.images["s3"][image["title"]] = {
-                    "url": "https://assets.dailybruin.com/{0}".format(fn), # TODO: replace with something configurable
+                    "url": f"https://{settings.S3_DOMAIN_OF_UPLOADED_IMAGES}/{fn}",
                     "key": fn,
                     "hash": image_hash,
                     "s3_fields": response

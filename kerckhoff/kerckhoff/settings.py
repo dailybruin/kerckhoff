@@ -35,6 +35,7 @@ DEBUG = env('DEBUG')
 
 if not DEBUG:
     ALLOWED_HOSTS = [ env('SITE_HOST'), ]
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', env('SITE_HOST')]
 

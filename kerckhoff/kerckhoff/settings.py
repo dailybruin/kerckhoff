@@ -35,7 +35,6 @@ DEBUG = env('DEBUG')
 
 if not DEBUG:
     ALLOWED_HOSTS = [ env('SITE_HOST'), ]
-    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', env('SITE_HOST')]
 
@@ -173,6 +172,10 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USERNAME_REQUIRED = True
 SITE_ID = 1
+
+if not DEBUG:
+    # Set https as default on production
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

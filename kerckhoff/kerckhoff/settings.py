@@ -173,6 +173,10 @@ ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USERNAME_REQUIRED = True
 SITE_ID = 1
 
+if not DEBUG:
+    # Set https as default on production
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

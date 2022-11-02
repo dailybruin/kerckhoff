@@ -16,11 +16,15 @@ RUN mkdir /kerckhoff
 RUN apt-get update && apt-get install -y curl \
                                          build-essential \
                                          libpq-dev \
-                                        git
+                                         git \
+                                         zlib1g
+
+ENV LIBRARY_PATH=/lib:/usr/lib
 
 WORKDIR /kerckhoff
 
 ADD requirements.txt /kerckhoff/
+RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Get the webpack built assets from the previous stage

@@ -149,7 +149,7 @@ export default {
     }
     axios.get("/api/packages/").then(res => {
       this.packageSets = res.data.data;
-      if (!this.packageSet) {
+      if (!this.packageSet && this.packageSets.length > 0) {
         this.packageSetDetails = this.packageSets[0];
         this.packageSet = this.packageSets[0].slug;
         this.getPackageData();

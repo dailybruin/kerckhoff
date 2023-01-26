@@ -1,13 +1,3 @@
-# # Stage 0 - Node build
-# FROM node:8
-# WORKDIR /kerckhoff
-# ENV DEBUG False
-# ADD package.json package-lock.json /kerckhoff/
-# RUN npm i
-# COPY ./webpack.config.js ./jsconfig.json ./
-# COPY ./kerckhoff/assets ./kerckhoff/assets
-# RUN npm run build
-# Set the base image.
 FROM node:10-slim
 
 # Create and define the node_modules's cache directory.
@@ -48,30 +38,3 @@ ADD . /kerckhoff/
 EXPOSE 5000
 ENTRYPOINT [ "./prod-entrypoint.sh" ]
 CMD "./prod.sh"
-
-# # Stage 1 - Python dependencies
-# FROM python:3.6-slim
-# ENV PYTHONUNBUFFERED 1
-# RUN mkdir /kerckhoff
-
-# RUN apt-get update && apt-get install -y curl \
-#                                          build-essential \
-#                                          libpq-dev \
-#                                          git \
-#                                          zlib1g
-
-# ENV LIBRARY_PATH=/lib:/usr/lib
-
-# WORKDIR /kerckhoff
-
-# ADD requirements.txt /kerckhoff/
-# RUN /usr/local/bin/python -m pip install --upgrade pip
-# RUN pip install -r requirements.txt
-
-# # Get the webpack built assets from the previous stage
-# COPY --from=0 /kerckhoff /kerckhoff
-
-# ADD . /kerckhoff/
-# EXPOSE 5000
-# ENTRYPOINT [ "./prod-entrypoint.sh" ]
-# CMD "./prod.sh"

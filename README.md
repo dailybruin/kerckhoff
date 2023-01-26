@@ -38,39 +38,14 @@ works, or reach out to us on Slack.
     * `git config --global core.eol lf`
     * `git config --global core.autocrlf input`
 
-3.  Create a .env file in your repository folder with the following contents:
-
-    ```.env
-    DATABASE_URL=postgres://postgres@db:5432/postgres
-    SITE_HOST=localhost
-    DEBUG=True
-    SECRET_KEY=kerchkoff-secrets
-    S3_SITE_UPLOAD_BUCKET=dev.kerckhoff.dailybruin.com
-    S3_ASSETS_UPLOAD_BUCKET=assets.dailybruin.com
-    AWS_ACCESS_KEY_ID=<your key here>
-    AWS_SECRET_ACCESS_KEY=<your secret key here>
-    REPOSITORY_FOLDER_ID=<your id here>
-    LIVE_PUSH_SERVER=google.com
-    DJANGO_SETTINGS_MODULE=kerckhoff.settings
-    ```
+3.  Create a .env file in your repository folder (acquire content from Internal Tools)
 
     * **Note**: You need values for `AWS_ACCESS_KEY_ID`,
       `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but if you aren't in
       Daily Bruin, you can't use ours ;). If you are,
       [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
 
-4.  Now we need to install node version 8! There are several ways to do this. I recommend using
-    [nvm](https://github.com/nvm-sh/nvm) or [n](https://github.com/tj/n).
-
-5.  Now we need to start webpack! Run `npm install` then `npm run watch`.
-
-6.  Use `docker-compose build` to build/pull and configure the Docker images
-    for the Django server. Then run `docker-compose up` to start the server.
-    Lastly, use `docker-compose run web ./kerckhoff/manage.py migrate` to set up the database.
-
-6.  The site should now be running on `localhost:5000`, and the server will
-    automatically restart after any edits you make to Python and JS source
-    files. Refresh the page to see them!
+4.  Run ```docker-compose up --build``` which will create all containers you need
 
 7.  Let's do some server side stuff. You should create an admin user to log in.
     Create a superuser using `docker-compose run web ./kerckhoff/manage.py createsuperuser`

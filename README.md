@@ -47,7 +47,7 @@ works, or reach out to us on Slack.
 
 4.  Run ```docker-compose up --build``` which will create all containers you need
 
-5. Run ```docker-compose run web ./kerckhoff/manage.py migrate``` in a separate terminal.
+5. Run ```docker-compose run web ./kerckhoff/manage.py makemigrations``` and then ```docker-compose run web ./kerckhoff/manage.py migrate``` in a separate terminal.
 
 6.  Let's do some server side stuff. You should create an admin user to log in.
     Create a superuser using `docker-compose run web ./kerckhoff/manage.py createsuperuser`

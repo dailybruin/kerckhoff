@@ -47,13 +47,11 @@ works, or reach out to us on Slack.
 
 4.  Run ```docker-compose up --build``` which will create all containers you need
 
-5. Run ```docker-compose run web ./kerckhoff/manage.py makemigrations``` and then ```docker-compose run web ./kerckhoff/manage.py migrate``` in a separate terminal.
-
-6.  Let's do some server side stuff. You should create an admin user to log in.
+5.  Let's do some server side stuff. You should create an admin user to log in.
     Create a superuser using `docker-compose run web ./kerckhoff/manage.py createsuperuser`
     Remember your admin username and password!
 
-7.  Now you will want to set up login for your Kerckhoff instance. Create or get a
+6.  Now you will want to set up login for your Kerckhoff instance. Create or get a
     Google OAuth client id and secret, and visit `localhost:5000/admin/`. Login with your newly
     created admin account, and create a new Social Application (under Social Accounts).
     Select Google as provider. Set name to Google, fill in the Client ID and secret key and

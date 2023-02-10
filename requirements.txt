@@ -1,4 +1,4 @@
-archieml===0.3.4
+git+https://github.com/dailybruin/archieml-python@9176625d1d2b163cf3808ea1506d05cdca10589f#egg=archieml
 arrow==1.2.3
 asgiref==3.6.0
 attrs==22.2.0

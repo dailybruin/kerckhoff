@@ -1,35 +1,39 @@
-# Stage 0 - Node build
-FROM node:8
+FROM node:10-slim
+
+# Create and define the node_modules's cache directory.
+RUN mkdir /usr/src/cache
+WORKDIR /usr/src/cache
+
+# Install the application's dependencies into the node_modules's cache directory.
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+
 WORKDIR /kerckhoff
-ENV DEBUG False
-ADD package.json package-lock.json /kerckhoff/
-RUN npm i
+COPY package.json package-lock.json /kerckhoff/
 COPY ./webpack.config.js ./jsconfig.json ./
 COPY ./kerckhoff/assets ./kerckhoff/assets
+RUN cp -r /usr/src/cache/node_modules/. /kerckhoff/node_modules/
 RUN npm run build
 
-# Stage 1 - Python dependencies
-FROM python:3.6-slim
-ENV PYTHONUNBUFFERED 1
-RUN mkdir /kerckhoff
+RUN apt update && \
+    apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget && \
+    wget https://www.python.org/ftp/python/3.7.4/Python-3.7.4.tgz && \
+    tar xzf Python-3.7.4.tgz && \
+    cd Python-3.7.4 && \
+    ./configure && \
+    make && \
+    make install
 
+ENV PYTHONUNBUFFERED 1
 RUN apt-get update && apt-get install -y curl \
                                          build-essential \
                                          libpq-dev \
                                          git \
                                          zlib1g
-
 ENV LIBRARY_PATH=/lib:/usr/lib
-
-WORKDIR /kerckhoff
-
 ADD requirements.txt /kerckhoff/
-RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-# Get the webpack built assets from the previous stage
-COPY --from=0 /kerckhoff /kerckhoff
-
+RUN python3.7 -m pip install --upgrade pip && python3.7 -m pip install -r requirements.txt
 ADD . /kerckhoff/
 EXPOSE 5000
 ENTRYPOINT [ "./prod-entrypoint.sh" ]

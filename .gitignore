@@ -118,3 +118,5 @@ kerckhoff/static/**/*
 v8-compile-cache*/**/*
 
 .vscode
+migrations/
+nohup.out

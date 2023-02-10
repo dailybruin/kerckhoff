@@ -1,8 +1,8 @@
-from elasticsearch_dsl import DocType, Text, Keyword, Date
+from elasticsearch_dsl import Document, Text, Keyword, Date
 
-class PackageIndex(DocType):
-    class Meta:
-        index = 'package-index'
+class PackageIndex(Document):
+    class Index:
+        name = 'package-index'
     slug = Keyword()
     package_set = Keyword()
     description = Text()

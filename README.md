@@ -43,7 +43,7 @@ works, or reach out to us on Slack.
     * **Note**: You need values for `AWS_ACCESS_KEY_ID`,
       `AWS_SECRET_ACCESS_KEY`, and `REPOSITORY_FOLDER_ID`, but if you aren't in
       Daily Bruin, you can't use ours ;). If you are,
-      [click here](https://dailybruin.slack.com/archives/C7RT6B4FP/p1527528167000076)!
+      [click here](https://dailybruin.slack.com/archives/C0150STGRF1/p1623724264001600)!
 
 4.  Run ```docker-compose up --build``` which will create all containers you need
 

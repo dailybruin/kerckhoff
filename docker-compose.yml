@@ -4,7 +4,7 @@ services:
   web:
     build: .
     image: kerckhoff
-    command: python3.7 kerckhoff/manage.py runserver 0.0.0.0:5000
+    command: python3 kerckhoff/manage.py runserver 0.0.0.0:5000
     entrypoint: ./dev-entrypoint.sh
     ports:
       - "5000:5000"
@@ -15,7 +15,7 @@ services:
     volumes:
       - .:/kerckhoff
   db:
-    image: postgres:12
+    image: postgres:latest
     ports:
       - "5432:5432"
     environment:

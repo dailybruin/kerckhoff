@@ -84,7 +84,6 @@ celerybeat-schedule
 env/
 venv/
 ENV/
-.secrets
 
 # Spyder project settings
 .spyderproject
@@ -118,5 +117,3 @@ kerckhoff/static/**/*
 v8-compile-cache*/**/*
 
 .vscode
-migrations/
-nohup.out

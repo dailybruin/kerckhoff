@@ -245,6 +245,6 @@ class RemoveGoogleTrackingFromHrefs(Filter):
 
 googleDocHTMLCleaner = Cleaner(tags=TAGS,
                   attributes=ATTRS,
-                  css_sanitizer=STYLES,
+                  styles=STYLES,
                   strip=True,
                   filters=[KeepOnlyInterestingSpans, ConvertPTagsToNewlines, RemoveGoogleTrackingFromHrefs])
